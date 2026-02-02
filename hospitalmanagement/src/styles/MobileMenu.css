@@ -1,0 +1,261 @@
+/* ========================================
+   MOBILE MENU STYLES (Hamburger Menu)
+   ======================================== */
+
+/* Hamburger Button */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 300;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .mobile-menu-toggle:active {
+    background-color: rgba(102, 126, 234, 0.1);
+  }
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2.5px;
+  background-color: #333;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Dark mode hamburger */
+.theme-dark .hamburger span {
+  background-color: #fff;
+}
+
+/* Menu Overlay */
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-overlay {
+    display: block;
+  }
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  left: -100%;
+  top: 0;
+  width: 80%;
+  max-width: 300px;
+  height: 100vh;
+  background-color: #f5f5f5;
+  flex-direction: column;
+  z-index: 200;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu {
+    display: flex;
+  }
+
+  .mobile-menu.open {
+    left: 0;
+  }
+}
+
+/* Mobile Menu Header */
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #667eea;
+  color: white;
+}
+
+.mobile-menu-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile Menu Items */
+.mobile-menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mobile-menu-item:active {
+  background-color: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.menu-icon {
+  font-size: 1.3rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.menu-label {
+  flex: 1;
+}
+
+/* Mobile Menu Footer */
+.mobile-menu-footer {
+  padding: 1rem;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.app-version {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Dark Mode */
+.theme-dark .mobile-menu {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+.theme-dark .mobile-menu-item {
+  color: #e0e0e0;
+  border-bottom-color: #404040;
+}
+
+.theme-dark .mobile-menu-item:active {
+  background-color: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+}
+
+.theme-dark .mobile-menu-header {
+  background-color: #667eea;
+}
+
+.theme-dark .mobile-menu-footer {
+  background-color: #1a1a1a;
+  border-top-color: #404040;
+  color: #999;
+}
+
+/* Tablet: Show sidebar, hide mobile menu */
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .mobile-menu-overlay {
+    display: none !important;
+  }
+
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-menu-toggle {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .close-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mobile-menu-item {
+    padding: 1.2rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+}

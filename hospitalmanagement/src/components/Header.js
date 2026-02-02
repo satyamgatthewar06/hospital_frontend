@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import ThemeToggle from './ThemeToggle';
+import MobileMenu from './MobileMenu';
 import { ThemeContext } from '../context/ThemeContext';
 import './Header.css';
 
@@ -39,6 +40,7 @@ const Header = () => {
             <ThemeToggle />
           </div>
         </div>
+        <MobileMenu />
       </header>
     </>
   );
