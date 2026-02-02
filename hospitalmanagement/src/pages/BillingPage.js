@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import BillingActions from '../components/BillingActions';
+import { ExportService } from '../services/exportService';
 import '../styles/BillingPage.css';
 
 const CHARGE_CATEGORIES = {
@@ -213,11 +214,30 @@ const BillingPage = () => {
         // Fallback: add to local state if no context
         setLocalBills(prev => [...prev, bill]);
       }
-      // reset
+      
+      // Auto-download PDF
+      try {
+        const normalizedBill = {
+          billId: bill.id,
+          patientName: bill.patientName,
+          totalAmount: bill.totalAmount,
+          finalAmount: bill.totalAmount,
+          date: bill.date,
+          items: bill.items,
+          billType: bill.billType,
+          ...bill
+        };
+        await ExportService.downloadBillPDF(normalizedBill);
+      } catch (pdfError) {
+        console.error('PDF download error:', pdfError);
+      }
+      
+      // Reset form
       setSelectedItems([]);
       setPatientName('');
       setBillType('opd');
-      alert('Bill generated successfully');
+      setSelectedBill(bill);
+      alert('Bill generated and PDF download started!');
     } catch (error) {
       console.error('Error generating bill:', error);
       // Fallback: add to local state even if API fails
