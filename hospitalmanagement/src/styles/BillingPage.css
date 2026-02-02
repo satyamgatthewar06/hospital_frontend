@@ -1,0 +1,390 @@
+.billing-page {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.billing-page h1 {
+  font-size: 1.875rem;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.billing-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Bill Form */
+.bill-form {
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  grid-row: 1 / 3;
+}
+
+.bill-form h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Charges Section */
+.charges-section {
+  margin: 1.5rem 0;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.charges-section h3 {
+  font-size: 1rem;
+  margin: 1rem 0 0.75rem 0;
+  color: #374151;
+}
+
+.charge-category {
+  margin-bottom: 1rem;
+}
+
+.charge-category h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.charge-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.charge-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.charge-btn:hover {
+  background: #e5e7eb;
+  border-color: #2563eb;
+  transform: translateX(4px);
+}
+
+.charge-btn .price {
+  font-weight: 600;
+  color: #2563eb;
+  margin-left: 0.5rem;
+}
+
+.btn-generate {
+  width: 100%;
+  padding: 0.75rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-generate:hover {
+  background: #059669;
+}
+
+.btn-generate:active {
+  transform: scale(0.98);
+}
+
+/* Bill Summary */
+.bill-summary {
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.bill-summary h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.charges-list {
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.charge-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.charge-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+}
+
+.charge-name {
+  font-weight: 500;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.charge-price {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.charge-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.qty-input {
+  width: 45px;
+  padding: 0.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.subtotal {
+  font-weight: 600;
+  color: #1f2937;
+  min-width: 60px;
+  text-align: right;
+}
+
+.btn-remove {
+  padding: 0.25rem 0.5rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+}
+
+/* Bill Totals */
+.bill-totals {
+  border-top: 2px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.total-row.highlight {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2563eb;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.total-amount {
+  color: #10b981;
+}
+
+/* Bills History */
+.bills-history {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.bills-history h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+table thead {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+table th,
+table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+table tbody tr {
+  transition: background 0.15s ease;
+}
+
+table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.amount {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.opd {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.ipd {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .billing-container {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-form {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .billing-page {
+    padding: 1rem;
+  }
+
+  .billing-page h1 {
+    font-size: 1.5rem;
+  }
+
+  .charge-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .charge-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .charge-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .subtotal {
+    flex-grow: 1;
+  }
+}

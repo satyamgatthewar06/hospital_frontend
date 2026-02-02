@@ -1,0 +1,480 @@
+/* Receptionist Dashboard Styles */
+
+.receptionist-dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.receptionist-dashboard h1 {
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.receptionist-dashboard .subtitle {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.9;
+}
+
+.stat-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.stat-number {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-subtext {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Doctors Section */
+.doctors-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.doctor-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.doctor-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.doctor-card.selected {
+  border-color: #667eea;
+  background: #f0f4ff;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.doctor-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.doctor-avatar {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doctor-info h3 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.doctor-info .specialization {
+  margin: 0;
+  color: #667eea;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.appointment-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.count-label {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.count-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+}
+
+.count-number.low {
+  color: #15803d;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.count-number.medium {
+  color: #b45309;
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+.count-number.high {
+  color: #dc2626;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.availability {
+  padding: 0.75rem;
+  background: #f0f4ff;
+  border-left: 4px solid #667eea;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.availability-label {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.availability-text {
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.contact:last-of-type {
+  border-bottom: none;
+}
+
+.contact-label {
+  font-size: 1.1rem;
+}
+
+.contact-text {
+  word-break: break-word;
+}
+
+.available-badge {
+  display: inline-block;
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+
+/* Appointments Section */
+.appointments-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.appointments-list {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.appointments-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appointments-list thead {
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.appointments-list th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.appointments-list td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.appointments-list tbody tr {
+  transition: background 0.2s ease;
+}
+
+.appointments-list tbody tr:hover {
+  background: #f9fafb;
+}
+
+.date-time {
+  font-weight: 600;
+  color: #667eea;
+  white-space: nowrap;
+}
+
+.doctor {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.specialization {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.patient {
+  color: #374151;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-upcoming {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-completed {
+  background: #d1d5db;
+  color: #374151;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .doctors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .receptionist-dashboard {
+    padding: 1rem;
+  }
+
+  .receptionist-dashboard h1 {
+    font-size: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .doctors-section,
+  .appointments-section {
+    padding: 1rem;
+  }
+
+  .section-header {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .section-header button {
+    width: 100%;
+  }
+
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .appointments-list table {
+    font-size: 0.85rem;
+  }
+
+  .appointments-list th,
+  .appointments-list td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  /* Hide non-essential columns on mobile */
+  .appointments-list thead th:nth-child(3),
+  .appointments-list tbody td:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .receptionist-dashboard {
+    padding: 0.5rem;
+  }
+
+  .receptionist-dashboard h1 {
+    font-size: 1.25rem;
+  }
+
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .doctor-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .availability,
+  .contact {
+    padding: 0.5rem;
+  }
+
+  .available-badge {
+    margin-top: 0.75rem;
+  }
+
+  /* Hide more columns on small mobile */
+  .appointments-list thead th:nth-child(2),
+  .appointments-list tbody td:nth-child(2) {
+    display: none;
+  }
+}

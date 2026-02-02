@@ -1,0 +1,96 @@
+.appointments-page {
+  padding: 1rem 0;
+}
+
+.appointments-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+}
+
+.appointments-sidebar {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.appt-form label {
+  font-weight: 600;
+  color: #4c51bf;
+  display: block;
+  margin-top: 0.75rem;
+}
+
+.appt-form input, .appt-form select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 0.25rem;
+}
+
+.filter-box {
+  margin-top: 1rem;
+}
+
+.appointments-main {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+}
+
+.calendar-panel {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.calendar-header {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-controls button {
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th, .calendar-table td {
+  width: 14.28%;
+  vertical-align: top;
+  border: 1px solid #f3f4f6;
+  padding: 0.4rem;
+  height: 100px;
+}
+
+.day-number { font-weight: 700; color: #4c51bf; }
+.day-count { margin-top: 0.5rem; background: #eef2ff; color: #4c51bf; padding: 0.2rem 0.4rem; border-radius: 6px; display:inline-block; font-size:0.85rem; }
+
+.calendar-table td.selected { outline: 3px solid rgba(76,81,191,0.12); }
+
+.day-appointments {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.day-appointments ul { list-style: none; padding-left: 0; }
+.day-appointments li { padding: 0.4rem 0; border-bottom: 1px dashed #f3f4f6; }
+
+@media (max-width: 900px) {
+  .appointments-layout { grid-template-columns: 1fr; }
+  .appointments-main { grid-template-columns: 1fr; }
+}

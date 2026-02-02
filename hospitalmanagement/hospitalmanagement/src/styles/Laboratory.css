@@ -1,0 +1,55 @@
+.laboratory-page { padding: 16px; }
+.lab-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.lab-tabs button { padding: 8px 12px; border: 1px solid #ddd; background: #f7f7f7; cursor: pointer; }
+.lab-tabs button.active { background: #0366d6; color: #fff; border-color: #0366d6; }
+
+.tests-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	align-items: center;
+}
+
+.test-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border: 1px solid #eee;
+	border-radius: 6px;
+	background: #fff;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.test-item input[type="checkbox"] {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+}
+
+.test-item span {
+	display: block;
+	line-height: 1.2;
+}
+
+.test-item small { color: #666; margin-left: 6px; font-weight: 400; }
+
+.test-price {
+	background: #f3f6fb;
+	color: #0b63d6;
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-weight: 700;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+
+.assign-form select, .assign-form input, .assign-form textarea { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+.upload-grid { display: flex; gap: 20px; }
+.assign-list, .result-entry { flex: 1; }
+.success { margin-top: 8px; color: green; }
+
+@media (max-width: 700px) {
+	.tests-grid { grid-template-columns: 1fr; }
+}

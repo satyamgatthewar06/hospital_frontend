@@ -1,0 +1,3 @@
+/* Minimal Navbar styles to satisfy import */
+.navbar { display:flex; align-items:center; gap:12px; padding:8px 12px; background:#fff; border-bottom:1px solid #eee; }
+.navbar .brand { font-weight:700; color:#2563eb; }

@@ -1,0 +1,11 @@
+.doctors-page { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+.doctors-page h1 { font-size: 1.5rem; margin-bottom: 1rem; color:#1f2937; }
+.doctors-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1rem; }
+.doctor-card { display:flex; gap:1rem; background:#fff; padding:1rem; border-radius:8px; border:1px solid #e5e7eb; align-items:flex-start; }
+.doctor-photo img { width:96px; height:96px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; }
+.doctor-info h3 { margin:0; font-size:1.05rem; color:#111827; }
+.doctor-info .specialty { color:#2563eb; font-weight:600; margin:0.25rem 0; }
+.meta { font-size:0.9rem; color:#374151; margin:0.5rem 0; display:flex; flex-direction:column; gap:0.25rem; }
+.qualifications ul { margin:0.25rem 0 0 1rem; padding:0; color:#4b5563; }
+.cert a { color:#0b61ff; font-weight:600; text-decoration:underline; }
+@media (max-width:768px){ .doctor-card{flex-direction:row; align-items:center} .doctor-photo img{width:72px;height:72px} }

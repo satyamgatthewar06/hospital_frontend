@@ -1,0 +1,124 @@
+/* Global animation tokens and utilities */
+:root{
+  --accent: #2563eb;
+  --muted: #94a3b8;
+  --elev: 0 6px 18px rgba(16,24,40,0.08);
+  --quick: 220ms;
+  --medium: 360ms;
+  --slow: 600ms;
+}
+
+/* Page / entry animation */
+body {
+  -webkit-font-smoothing:antialiased;
+  animation: pageFade var(--medium) cubic-bezier(.2,.9,.3,1) both;
+  background-color: var(--bg, inherit);
+}
+
+/* sidebar and main content */
+.sidebar {
+  animation: slideInLeft var(--medium) cubic-bezier(.2,.9,.3,1) both;
+  will-change: transform, opacity;
+}
+.main-content {
+  animation: fadeUp var(--medium) cubic-bezier(.2,.9,.3,1) both;
+}
+
+/* Links with underline reveal */
+a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  transition: color var(--quick) ease;
+}
+a::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--quick) ease;
+  opacity: .95;
+}
+a:hover::after,
+a:focus::after { transform: scaleX(1); }
+
+/* Buttons */
+button,
+input[type="button"],
+input[type="submit"] {
+  transition: transform var(--quick) ease, box-shadow var(--quick) ease;
+  will-change: transform, box-shadow;
+}
+button:active,
+button:focus { transform: translateY(1px) scale(0.997); }
+button:hover { box-shadow: var(--elev); }
+
+/* Nav items & links subtle motion */
+.sidebar-nav a {
+  display: inline-block;
+  transition: transform var(--quick) ease, background-color var(--quick) ease;
+}
+.sidebar-nav a:hover { transform: translateX(6px); }
+
+/* Cards / panels */
+.card, .panel {
+  background: var(--card-bg, #fff);
+  border-radius: 8px;
+  transition: transform var(--quick) ease, box-shadow var(--quick) ease, opacity var(--quick) ease;
+  will-change: transform, box-shadow;
+}
+.card:hover, .panel:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+}
+
+/* Tiny icon / svg animation */
+.icon-animate { transition: transform var(--quick) ease; }
+.icon-animate:hover { transform: rotate(10deg) scale(1.04); }
+
+/* Focus ring for accessibility with smooth entrance */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.14);
+  border-radius: 6px;
+}
+
+/* Backdrop fade for mobile sidebar */
+.sidebar-backdrop {
+  transition: opacity var(--quick) ease;
+}
+
+/* Utility animation classes (use in components as needed) */
+.fade-in { animation: fadeIn var(--quick) ease both; }
+.fade-up { animation: fadeUp var(--quick) ease both; }
+.staggered { animation: fadeUp var(--medium) cubic-bezier(.2,.9,.3,1) both; }
+
+/* Keyframes */
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(8px) scale(.998); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

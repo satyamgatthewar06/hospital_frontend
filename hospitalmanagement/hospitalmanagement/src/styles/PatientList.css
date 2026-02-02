@@ -1,0 +1,256 @@
+/* Patient List */
+.patient-list-container {
+  width: 100%;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.no-patients {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  color: #666;
+}
+
+.no-patients p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.search-hint {
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.patients-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.patients-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.patients-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.patients-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+.patients-table tbody tr:hover {
+  background-color: #f5f7ff;
+}
+
+.patients-table td {
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.patient-id {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #e3f2fd;
+  color: #667eea;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.blood-group {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.visit-count {
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 4px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-view {
+  color: #667eea;
+}
+
+.btn-view:hover {
+  background-color: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.btn-edit {
+  color: #ffc107;
+}
+
+.btn-edit:hover {
+  background-color: #ffc107;
+  color: white;
+  border-color: #ffc107;
+}
+
+.btn-history {
+  color: #17a2b8;
+}
+
+.btn-history:hover {
+  background-color: #17a2b8;
+  color: white;
+  border-color: #17a2b8;
+}
+
+.btn-delete {
+  color: #dc3545;
+}
+
+.btn-delete:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.list-footer {
+  margin-top: 25px;
+  padding: 15px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.list-footer strong {
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-header h2 {
+    width: 100%;
+  }
+
+  .search-box {
+    width: 100%;
+    max-width: none;
+  }
+
+  .patients-table {
+    font-size: 0.9rem;
+  }
+
+  .patients-table th,
+  .patients-table td {
+    padding: 10px;
+  }
+
+  .action-buttons {
+    justify-content: center;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}

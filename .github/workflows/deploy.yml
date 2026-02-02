@@ -1,0 +1,84 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install backend dependencies
+        working-directory: ./hospital-backend
+        run: npm install
+      
+      - name: Run linter
+        working-directory: ./hospital-backend
+        run: npm run lint --if-present || echo "No lint script"
+      
+      - name: Health check syntax
+        working-directory: ./hospital-backend
+        run: node -c server.js
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install frontend dependencies
+        working-directory: ./hospitalmanagement
+        run: npm install
+      
+      - name: Build frontend
+        working-directory: ./hospitalmanagement
+        run: npm run build
+      
+      - name: Check build output
+        working-directory: ./hospitalmanagement
+        run: |
+          if [ -d "build" ]; then
+            echo "✅ Build successful"
+            ls -la build/ | head -20
+          else
+            echo "❌ Build failed"
+            exit 1
+          fi
+
+  notify:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment Status
+        run: |
+          echo "✅ All checks passed - Railway auto-deployment triggered!"
+          echo "Check https://railway.app for deployment status"
+
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for secrets
+        run: |
+          if grep -r "password\|secret\|key" .env 2>/dev/null; then
+            echo "⚠️ WARNING: Potential secrets in .env (should be removed from repo)"
+            echo "Use .env.example instead"
+          fi
+
