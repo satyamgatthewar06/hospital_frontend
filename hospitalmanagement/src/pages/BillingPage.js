@@ -59,6 +59,7 @@ const BillingPage = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [patientName, setPatientName] = useState('');
   const [billType, setBillType] = useState('opd');
+  const [selectedBill, setSelectedBill] = useState(null);
 
   const formatCurrency = (v) => `₹${Number(v || 0).toFixed(2)}`;
 
@@ -350,7 +351,7 @@ const BillingPage = () => {
           </thead>
           <tbody>
             {bills.map(bill => (
-              <tr key={bill.id}>
+              <tr key={bill.id} onClick={() => setSelectedBill(bill)} style={{ cursor: 'pointer', backgroundColor: selectedBill?.id === bill.id ? '#f0f9ff' : 'transparent' }}>
                 <td>{bill.patientName || '--'}</td>
                 <td>
                   <span className={`status ${((bill.status||'pending').toLowerCase())}`}>
@@ -379,7 +380,7 @@ const BillingPage = () => {
         </table>
       </div>
 
-      <BillingActions bills={bills} allData={ctx} />
+      <BillingActions bill={selectedBill} bills={bills} allData={ctx} />
     </div>
   );
 };

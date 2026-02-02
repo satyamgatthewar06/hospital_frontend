@@ -8,25 +8,52 @@ import '../styles/BillingActions.css';
 const BillingActions = ({ bill, bills, allData }) => {
   const { theme } = useContext(ThemeContext);
 
+  // Normalize bill data to handle different property names
+  const normalizeBill = (billData) => {
+    if (!billData) return null;
+    return {
+      billId: billData.billId || billData.id,
+      patientName: billData.patientName,
+      patientId: billData.patientId,
+      totalAmount: billData.totalAmount || billData.amount,
+      finalAmount: billData.finalAmount || billData.totalAmount || billData.amount,
+      billDate: billData.billDate || billData.date,
+      email: billData.email,
+      phone: billData.phone,
+      ...billData
+    };
+  };
+
   const handleDownloadPDF = async () => {
     try {
-      await ExportService.downloadBillPDF(bill);
+      if (!bill) {
+        alert('Please select a bill first');
+        return;
+      }
+      const normalizedBill = normalizeBill(bill);
+      await ExportService.downloadBillPDF(normalizedBill);
       alert('Bill PDF downloaded successfully!');
     } catch (error) {
+      console.error('PDF download error:', error);
       alert('Error downloading PDF: ' + error.message);
     }
   };
 
   const handleProcessPayment = async () => {
     try {
+      if (!bill) {
+        alert('Please select a bill first');
+        return;
+      }
+      const normalizedBill = normalizeBill(bill);
       const paymentResult = await RazorpayService.initiatePayment({
-        amount: bill.finalAmount,
-        billId: bill.billId,
-        patientName: bill.patientName,
-        patientId: bill.patientId,
-        email: bill.email || 'patient@hospital.com',
-        phone: bill.phone || '9999999999',
-        description: `Payment for Bill ${bill.billId}`
+        amount: normalizedBill.finalAmount,
+        billId: normalizedBill.billId,
+        patientName: normalizedBill.patientName,
+        patientId: normalizedBill.patientId,
+        email: normalizedBill.email || 'patient@hospital.com',
+        phone: normalizedBill.phone || '9999999999',
+        description: `Payment for Bill ${normalizedBill.billId}`
       });
 
       // Verify payment
@@ -39,8 +66,8 @@ const BillingActions = ({ bill, bills, allData }) => {
         
         // Send notification
         try {
-          await NotificationService.sendPaymentSMS(bill.phone, bill.billId, bill.finalAmount);
-          await NotificationService.sendPaymentReceipt(bill.email, bill);
+          await NotificationService.sendPaymentSMS(normalizedBill.phone, normalizedBill.billId, normalizedBill.finalAmount);
+          await NotificationService.sendPaymentReceipt(normalizedBill.email, normalizedBill);
         } catch (e) {
           console.log('Notification failed:', e);
         }
@@ -72,10 +99,15 @@ const BillingActions = ({ bill, bills, allData }) => {
 
   const handleSendPaymentReminder = async () => {
     try {
+      if (!bill) {
+        alert('Please select a bill first');
+        return;
+      }
+      const normalizedBill = normalizeBill(bill);
       await NotificationService.sendPaymentSMS(
-        bill.phone, 
-        bill.billId, 
-        bill.finalAmount
+        normalizedBill.phone, 
+        normalizedBill.billId, 
+        normalizedBill.finalAmount
       );
       alert('Payment reminder sent via SMS!');
     } catch (error) {
