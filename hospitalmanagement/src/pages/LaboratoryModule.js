@@ -332,4 +332,3 @@ const LaboratoryModule = () => {
 };
 
 export default LaboratoryModule;
-REACT_APP_RAZORPAY_KEY=your_key_here

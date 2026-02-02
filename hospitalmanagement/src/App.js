@@ -23,8 +23,10 @@ import LaboratoryModule from './pages/LaboratoryModule';
 import RoomManagement from './pages/RoomManagement';
 import EnhancedStaffManagement from './pages/EnhancedStaffManagement';
 import TPAManagement from './pages/TPAManagement';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import AdminLogin from './components/AdminLogin';
 import { HospitalProvider } from './context/HospitalContext';
+import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
 import './animations.css';
 import Header from './components/Header';
@@ -58,6 +60,7 @@ const MainContent = () => {
         <Route path="/room-management" component={RoomManagement} />
         <Route path="/staff-management" component={EnhancedStaffManagement} />
         <Route path="/tpa-management" component={TPAManagement} />
+        <Route path="/analytics" component={AnalyticsDashboard} />
         <Route path="/admin/login" component={AdminLogin} />
       </Switch>
       {location.pathname === '/' && <Footer />}
@@ -66,12 +69,14 @@ const MainContent = () => {
 };
 
 const App = () => (
-  <HospitalProvider>
-    <Router>
-      <Sidebar />
-      <MainContent />
-    </Router>
-  </HospitalProvider>
+  <ThemeProvider>
+    <HospitalProvider>
+      <Router>
+        <Sidebar />
+        <MainContent />
+      </Router>
+    </HospitalProvider>
+  </ThemeProvider>
 );
 
 export default App;
