@@ -185,7 +185,8 @@ const LaboratoryModule = () => {
         <div className="form-section">
           <h2>Add New Laboratory Test</h2>
           <form onSubmit={handleSubmit}>
-      <BillingActions bill={selectedBill} bills={bills} allData={hospitalData} />
+            <div className="form-row">
+              <div className="form-group">
                 <label>Patient Name</label>
                 <input
                   type="text"
