@@ -185,7 +185,7 @@ const BillingPage = () => {
 
   const computeTotal = () => selectedItems.reduce((s, it) => s + ((it.qty||1) * (it.price||0)), 0);
 
-  const generateBill = () => {
+  const generateBill = async () => {
     if (!patientName) {
       alert('Please enter or select patient name');
       return;
@@ -204,12 +204,25 @@ const BillingPage = () => {
       status: 'Pending',
       amountPaid: 0
     };
-    if (ctx.addBill) ctx.addBill(bill);
-    // reset
-    setSelectedItems([]);
-    setPatientName('');
-    setBillType('opd');
-    alert('Bill generated');
+    
+    try {
+      if (ctx.addBill) {
+        await ctx.addBill(bill);
+      } else {
+        // Fallback: add to local state if no context
+        setLocalBills(prev => [...prev, bill]);
+      }
+      // reset
+      setSelectedItems([]);
+      setPatientName('');
+      setBillType('opd');
+      alert('Bill generated successfully');
+    } catch (error) {
+      console.error('Error generating bill:', error);
+      // Fallback: add to local state even if API fails
+      setLocalBills(prev => [...prev, bill]);
+      alert('Bill generated (offline mode)');
+    }
   };
 
   const markPaid = (bill) => {
