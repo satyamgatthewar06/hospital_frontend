@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
+import BillingActions from '../components/BillingActions';
 import '../styles/BillingPage.css';
 
 const CHARGE_CATEGORIES = {
@@ -364,6 +365,8 @@ const BillingPage = () => {
           </tbody>
         </table>
       </div>
+
+      <BillingActions bills={bills} allData={ctx} />
     </div>
   );
 };
