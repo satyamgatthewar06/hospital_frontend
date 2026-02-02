@@ -1,9 +1,12 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/LaboratoryModule.css';
+import ThemeToggle from '../components/ThemeToggle';
+import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import BillingActions from '../components/BillingActions';
 
 const LaboratoryModule = () => {
-  const { labTests } = useContext(HospitalContext);
+  const { labTests, bills, hospitalData } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     patientName: '',
@@ -18,6 +21,7 @@ const LaboratoryModule = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [expandedReport, setExpandedReport] = useState(null);
+  const [selectedBill, setSelectedBill] = useState(null);
 
   const contextData = labTests || [];
   const [localData, setLocalData] = useState([]);
@@ -145,6 +149,7 @@ const LaboratoryModule = () => {
   return (
     <div className="laboratory-module">
       <h1>🔬 Laboratory Module</h1>
+      <ThemeToggle />
 
       <div className="lab-stats">
         <div className="stats-grid">
@@ -180,8 +185,7 @@ const LaboratoryModule = () => {
         <div className="form-section">
           <h2>Add New Laboratory Test</h2>
           <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group">
+      <BillingActions bill={selectedBill} bills={bills} allData={hospitalData} />
                 <label>Patient Name</label>
                 <input
                   type="text"
@@ -321,8 +325,13 @@ const LaboratoryModule = () => {
           )}
         </div>
       )}
+
+      <BillingActions bill={selectedBill} bills={bills} allData={hospitalData} />
+
+      <Route path="/analytics" component={AnalyticsDashboard} />
     </div>
   );
 };
 
 export default LaboratoryModule;
+REACT_APP_RAZORPAY_KEY=your_key_here
