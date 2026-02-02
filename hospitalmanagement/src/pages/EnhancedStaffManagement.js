@@ -1,9 +1,9 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/EnhancedStaffManagement.css';
 
 const EnhancedStaffManagement = () => {
-  const { hospitalData, setHospitalData } = useContext(HospitalContext);
+  const { staff } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     name: '',
@@ -19,31 +19,39 @@ const EnhancedStaffManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('All');
 
-  const staff = hospitalData.staff || [];
+  const [localStaff, setLocalStaff] = useState([]);
+
+  useEffect(() => {
+    if (staff && staff.length > 0) {
+      setLocalStaff(staff);
+    }
+  }, [staff]);
+
+  const staffList = localStaff || [];
   const roles = ['Doctor', 'Nurse', 'Receptionist', 'Technician', 'Pharmacist', 'Admin'];
   const departments = ['General', 'Cardiology', 'Orthopedics', 'Neurology', 'Surgery', 'Pediatrics', 'ICU', 'Emergency'];
 
   const stats = useMemo(() => {
     const roleCount = {};
-    staff.forEach(s => {
+    staffList.forEach(s => {
       roleCount[s.role] = (roleCount[s.role] || 0) + 1;
     });
     return {
-      total: staff.length,
-      active: staff.filter(s => s.status === 'Active').length,
+      total: staffList.length,
+      active: staffList.filter(s => s.status === 'Active').length,
       roles: Object.keys(roleCount).map(role => ({ role, count: roleCount[role] }))
     };
-  }, [staff]);
+  }, [staffList]);
 
   const filteredStaff = useMemo(() => {
-    return staff.filter(member => {
+    return staffList.filter(member => {
       const matchesSearch = 
         member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         member.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filterRole === 'All' || member.role === filterRole;
       return matchesSearch && matchesFilter;
     });
-  }, [staff, searchTerm, filterRole]);
+  }, [staffList, searchTerm, filterRole]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,10 +61,7 @@ const EnhancedStaffManagement = () => {
       salary: parseFloat(formData.salary)
     };
 
-    setHospitalData(prev => ({
-      ...prev,
-      staff: [...(prev.staff || []), newMember]
-    }));
+    setLocalStaff([...localStaff, newMember]);
 
     setFormData({
       name: '',
@@ -73,17 +78,11 @@ const EnhancedStaffManagement = () => {
   };
 
   const handleDeleteStaff = (id) => {
-    setHospitalData(prev => ({
-      ...prev,
-      staff: prev.staff.filter(member => member.id !== id)
-    }));
+    setLocalStaff(localStaff.filter(member => member.id !== id));
   };
 
   const handleUpdateStatus = (id, newStatus) => {
-    setHospitalData(prev => ({
-      ...prev,
-      staff: prev.staff.map(member => member.id === id ? { ...member, status: newStatus } : member)
-    }));
+    setLocalStaff(localStaff.map(member => member.id === id ? { ...member, status: newStatus } : member));
   };
 
   const getRoleColor = (role) => {

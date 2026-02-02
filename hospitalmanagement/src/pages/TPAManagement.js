@@ -1,9 +1,9 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/TPAManagement.css';
 
 const TPAManagement = () => {
-  const { hospitalData, setHospitalData } = useContext(HospitalContext);
+  const { tpaRecords } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     claimNumber: '',
@@ -20,7 +20,15 @@ const TPAManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
 
-  const claims = hospitalData.tpaClaims || [];
+  const [localClaims, setLocalClaims] = useState([]);
+
+  useEffect(() => {
+    if (tpaRecords && tpaRecords.length > 0) {
+      setLocalClaims(tpaRecords);
+    }
+  }, [tpaRecords]);
+
+  const claims = localClaims || [];
   const tpaCompanies = ['ICICI Lombard', 'HDFC ERGO', 'Apollo Munich', 'Cigna', 'Aditya Birla', 'Bajaj'];
   const claimStatuses = ['Pending', 'Under Review', 'Approved', 'Rejected', 'Partial Approval', 'Processing'];
 
@@ -56,10 +64,7 @@ const TPAManagement = () => {
       deductionAmount: parseFloat(formData.deductionAmount)
     };
 
-    setHospitalData(prev => ({
-      ...prev,
-      tpaClaims: [...(prev.tpaClaims || []), newClaim]
-    }));
+    setLocalClaims([...localClaims, newClaim]);
 
     setFormData({
       claimNumber: '',
@@ -77,17 +82,11 @@ const TPAManagement = () => {
   };
 
   const handleDeleteClaim = (id) => {
-    setHospitalData(prev => ({
-      ...prev,
-      tpaClaims: prev.tpaClaims.filter(claim => claim.id !== id)
-    }));
+    setLocalClaims(localClaims.filter(claim => claim.id !== id));
   };
 
   const handleUpdateStatus = (id, newStatus) => {
-    setHospitalData(prev => ({
-      ...prev,
-      tpaClaims: prev.tpaClaims.map(claim => claim.id === id ? { ...claim, status: newStatus } : claim)
-    }));
+    setLocalClaims(localClaims.map(claim => claim.id === id ? { ...claim, status: newStatus } : claim));
   };
 
   const generateClaimDocument = (claim) => {

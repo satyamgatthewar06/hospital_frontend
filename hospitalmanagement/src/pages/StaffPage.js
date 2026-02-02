@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import RoleGuard from '../components/RoleGuard';
 import AdminUsers from '../components/Staff/AdminUsers';
@@ -36,8 +36,17 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 const StaffPage = () => {
   const ctx = useContext(HospitalContext) || {};
-  const staff = ctx.staff || [];
+  const contextStaff = ctx.staff || [];
   const addStaff = ctx.addStaff || (() => {});
+
+  const [localStaff, setLocalStaff] = useState([]);
+  useEffect(() => {
+    if (contextStaff && contextStaff.length > 0) {
+      setLocalStaff(contextStaff);
+    }
+  }, [contextStaff]);
+
+  const staff = localStaff || [];
 
   const [form, setForm] = useState({
     name: '',
@@ -61,11 +70,12 @@ const StaffPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (form.name && form.role && form.department) {
-      addStaff({
+      const newStaff = {
         id: Date.now(),
         ...form,
         status: 'Active',
-      });
+      };
+      setLocalStaff([...localStaff, newStaff]);
       setForm({ name: '', role: '', department: '', contact: '', email: '', joinDate: '', experience: '' });
     }
   };

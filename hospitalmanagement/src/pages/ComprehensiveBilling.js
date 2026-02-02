@@ -1,12 +1,21 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/ComprehensiveBilling.css';
 
 const ComprehensiveBilling = () => {
   const ctx = useContext(HospitalContext) || {};
-  const bills = ctx.bills || [];
+  const contextBills = ctx.bills || [];
   const patients = ctx.patients || [];
   const addBill = ctx.addBill || (() => {});
+
+  const [localBills, setLocalBills] = useState([]);
+  useEffect(() => {
+    if (contextBills && contextBills.length > 0) {
+      setLocalBills(contextBills);
+    }
+  }, [contextBills]);
+
+  const bills = localBills || [];
 
   const [activeTab, setActiveTab] = useState('list');
   const [form, setForm] = useState({
@@ -42,14 +51,15 @@ const ComprehensiveBilling = () => {
       (parseInt(form.otherCharges) || 0);
 
     if (form.patientName && totalAmount > 0) {
-      addBill({
+      const newBill = {
         id: Date.now(),
         billId: `BILL-${Date.now()}`,
         ...form,
         totalAmount,
         discountAmount: 0,
         finalAmount: totalAmount,
-      });
+      };
+      setLocalBills([...localBills, newBill]);
       setForm({
         patientName: '',
         patientId: '',

@@ -1,9 +1,9 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/RoomManagement.css';
 
 const RoomManagement = () => {
-  const { hospitalData, setHospitalData } = useContext(HospitalContext);
+  const { wards, loading, errors } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     roomNumber: '',
@@ -17,8 +17,16 @@ const RoomManagement = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
+  const [localWards, setLocalWards] = useState([]);
 
-  const rooms = hospitalData.rooms || [];
+  // Initialize local state from context
+  useEffect(() => {
+    if (wards && wards.length > 0) {
+      setLocalWards(wards);
+    }
+  }, [wards]);
+
+  const rooms = localWards || [];
   const roomTypes = ['General Ward', 'Private Room', 'ICU', 'Semi-Private', 'Isolation Ward', 'Pediatric'];
   const amenitiesOptions = ['AC', 'Wifi', 'TV', 'Attached Bath', 'Emergency Call', 'Oxygen Support', 'Monitoring'];
 
@@ -48,10 +56,7 @@ const RoomManagement = () => {
       chargePerDay: parseFloat(formData.chargePerDay)
     };
 
-    setHospitalData(prev => ({
-      ...prev,
-      rooms: [...(prev.rooms || []), newRoom]
-    }));
+    setLocalWards([...localWards, newRoom]);
 
     setFormData({
       roomNumber: '',
@@ -67,24 +72,15 @@ const RoomManagement = () => {
   };
 
   const handleDeleteRoom = (id) => {
-    setHospitalData(prev => ({
-      ...prev,
-      rooms: prev.rooms.filter(room => room.id !== id)
-    }));
+    setLocalWards(localWards.filter(room => room.id !== id));
   };
 
   const handleUpdateStatus = (id, newStatus) => {
-    setHospitalData(prev => ({
-      ...prev,
-      rooms: prev.rooms.map(room => room.id === id ? { ...room, status: newStatus } : room)
-    }));
+    setLocalWards(localWards.map(room => room.id === id ? { ...room, status: newStatus } : room));
   };
 
   const handleUpdateOccupancy = (id, newOccupancy) => {
-    setHospitalData(prev => ({
-      ...prev,
-      rooms: prev.rooms.map(room => room.id === id ? { ...room, currentOccupancy: newOccupancy } : room)
-    }));
+    setLocalWards(localWards.map(room => room.id === id ? { ...room, currentOccupancy: newOccupancy } : room));
   };
 
   return (

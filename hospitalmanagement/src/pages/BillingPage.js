@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/BillingPage.css';
 
@@ -42,9 +42,18 @@ const CHARGE_CATEGORIES = {
 
 const BillingPage = () => {
   const ctx = useContext(HospitalContext) || {};
-  const bills = ctx.bills || [];
+  const contextBills = ctx.bills || [];
   const patients = ctx.patients || [];
   const updateBillPayment = ctx.updateBillPayment;
+
+  const [localBills, setLocalBills] = useState([]);
+  useEffect(() => {
+    if (contextBills && contextBills.length > 0) {
+      setLocalBills(contextBills);
+    }
+  }, [contextBills]);
+
+  const bills = localBills || [];
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [patientName, setPatientName] = useState('');

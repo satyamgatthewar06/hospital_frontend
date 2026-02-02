@@ -1,9 +1,9 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/LaboratoryModule.css';
 
 const LaboratoryModule = () => {
-  const { hospitalData, setHospitalData } = useContext(HospitalContext);
+  const { labTests } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     patientName: '',
@@ -19,7 +19,16 @@ const LaboratoryModule = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [expandedReport, setExpandedReport] = useState(null);
 
-  const tests = hospitalData.laboratory || [];
+  const contextData = labTests || [];
+  const [localData, setLocalData] = useState([]);
+
+  useEffect(() => {
+    if (contextData?.length) setLocalData(contextData);
+  }, [contextData]);
+
+  const data = localData || [];
+
+  const tests = data || [];
   const testTypes = ['Blood Test', 'Urine Test', 'X-Ray', 'Ultrasound', 'CT Scan', 'ECG', 'Full Body Checkup'];
   const bloodTestSubTypes = ['Complete Blood Count', 'Blood Sugar', 'Thyroid Profile', 'Lipid Profile', 'Liver Function', 'Kidney Function'];
   const urineTestSubTypes = ['Routine', 'Culture & Sensitivity', 'Pregnancy', 'Microalbumin'];
@@ -51,10 +60,7 @@ const LaboratoryModule = () => {
       reportDate: formData.reportDate || new Date().toISOString().split('T')[0]
     };
     
-    setHospitalData(prev => ({
-      ...prev,
-      laboratory: [...(prev.laboratory || []), newTest]
-    }));
+    setLocalData([...localData, newTest]);
 
     setFormData({
       patientName: '',
@@ -70,19 +76,13 @@ const LaboratoryModule = () => {
   };
 
   const handleDeleteTest = (id) => {
-    setHospitalData(prev => ({
-      ...prev,
-      laboratory: prev.laboratory.filter(test => test.id !== id)
-    }));
+    setLocalData(localData.filter(test => test.id !== id));
   };
 
   const handleUpdateStatus = (id, newStatus) => {
-    setHospitalData(prev => ({
-      ...prev,
-      laboratory: prev.laboratory.map(test =>
-        test.id === id ? { ...test, status: newStatus } : test
-      )
-    }));
+    setLocalData(localData.map(test =>
+      test.id === id ? { ...test, status: newStatus, reportDate: new Date().toISOString().split('T')[0] } : test
+    ));
   };
 
   const generateReport = (test) => {
