@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { HospitalContext } from '../context/HospitalContext';
 import './Adminlogin.css';
 
 const AdminLogin = () => {
@@ -8,33 +9,44 @@ const AdminLogin = () => {
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const history = useHistory();
+	const { login, isAuthenticated, currentUser } = useContext(HospitalContext);
 
-	// Auto-login on mount
+	// Auto-login on mount if already authenticated
 	useEffect(() => {
-		setLoading(true);
-		setTimeout(() => {
-			setLoading(false);
+		if (isAuthenticated && currentUser) {
 			history.push('/');
-		}, 500);
-	}, [history]);
+		}
+	}, [isAuthenticated, currentUser, history]);
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError('');
-		// simple mock authentication
-		if (username === 'admin' && password === 'admin123') {
-			setLoading(true);
-			setTimeout(() => {
-				setLoading(false);
-				history.push('/');
-			}, 800);
-		} else {
-			setError('Invalid username or password');
+		setLoading(true);
+
+		try {
+			// Try to login via API
+			const user = await login(username, password);
+			console.log('Login successful:', user);
+			setLoading(false);
+			history.push('/');
+		} catch (err) {
+			setLoading(false);
+			// Fallback to default credentials for demo/development
+			if (username === 'admin' && password === 'admin123') {
+				console.log('Using fallback demo credentials');
+				setLoading(true);
+				setTimeout(() => {
+					setLoading(false);
+					history.push('/');
+				}, 800);
+			} else {
+				setError(err.response?.data?.message || 'Invalid username or password');
+				console.error('Login error:', err);
+			}
 		}
 	};
 
 	const handleForgot = () => {
-		// simple placeholder behaviour
 		alert('Please contact administrator to reset your password.');
 	};
 
@@ -51,6 +63,7 @@ const AdminLogin = () => {
 					onChange={(e) => setUsername(e.target.value)}
 					required
 					placeholder="Enter username"
+					disabled={loading}
 				/>
 
 				<label>Password</label>
@@ -60,15 +73,20 @@ const AdminLogin = () => {
 					onChange={(e) => setPassword(e.target.value)}
 					required
 					placeholder="Enter password"
+					disabled={loading}
 				/>
 
 				<div className="login-actions">
 					<button type="submit" className="btn-primary" disabled={loading}>
 						{loading ? 'Logging in...' : 'Login'}
 					</button>
-					<button type="button" className="btn-link" onClick={handleForgot}>
+					<button type="button" className="btn-link" onClick={handleForgot} disabled={loading}>
 						Forgot Password
 					</button>
+				</div>
+
+				<div className="demo-credentials">
+					<small>Demo: admin / admin123</small>
 				</div>
 			</form>
 		</div>

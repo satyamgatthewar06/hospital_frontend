@@ -1,150 +1,192 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+import axios from 'axios';
 
-const app = express();
+// Get API base URL from environment variables or use default
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Sample data
-let patients = [];
-let doctors = [];
-let billings = [];
-let appointments = [];
-
-// optional nodemailer (will gracefully no-op if not installed or not configured)
-let nodemailer = null;
-try {
-  nodemailer = require('nodemailer');
-} catch (e) {
-  // nodemailer not available
-}
-
-// Patient Routes
-app.get('/api/patients', (req, res) => {
-  res.json(patients);
+// Create axios instance with default config
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 second timeout
 });
 
-app.post('/api/patients', (req, res) => {
-  const patient = {
-    id: patients.length + 1,
-    ...req.body
-  };
-  patients.push(patient);
-  res.json(patient);
-});
-
-app.delete('/api/patients/:id', (req, res) => {
-  patients = patients.filter(p => p.id !== parseInt(req.params.id));
-  res.json({ message: 'Patient deleted' });
-});
-
-// Doctor Routes
-app.get('/api/doctors', (req, res) => {
-  res.json(doctors);
-});
-
-app.post('/api/doctors', (req, res) => {
-  const doctor = {
-    id: doctors.length + 1,
-    ...req.body
-  };
-  doctors.push(doctor);
-  res.json(doctor);
-});
-
-// Billing Routes
-app.get('/api/billings', (req, res) => {
-  res.json(billings);
-});
-
-app.post('/api/billings', (req, res) => {
-  const billing = {
-    id: billings.length + 1,
-    ...req.body
-  };
-  billings.push(billing);
-  res.json(billing);
-});
-
-// Appointments Routes
-app.get('/api/appointments', (req, res) => {
-  res.json(appointments);
-});
-
-app.post('/api/appointments', async (req, res) => {
-  const appointment = { id: appointments.length + 1, ...req.body };
-  appointments.push(appointment);
-
-  // Try to send email if email present and nodemailer configured via env
-  try {
-    const to = req.body.email || req.body.contact;
-    const smtpHost = process.env.SMTP_HOST;
-    if (nodemailer && to && smtpHost) {
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
-      });
-
-      const mailOptions = {
-        from: process.env.SMTP_FROM || 'no-reply@hospital.local',
-        to,
-        subject: 'Appointment Confirmation',
-        text: `Your appointment is confirmed with ${appointment.doctor} on ${appointment.date} at ${appointment.time}. Reason: ${appointment.reason || 'N/A'}`,
-        html: `<p>Your appointment is confirmed with <strong>${appointment.doctor}</strong> on <strong>${appointment.date}</strong> at <strong>${appointment.time}</strong>.</p><p>Reason: ${appointment.reason || 'N/A'}</p>`
-      };
-
-      await transporter.sendMail(mailOptions);
+// Add request interceptor to include auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-  } catch (err) {
-    console.error('Failed to send appointment email', err.message || err);
-    // don't fail the request because of email failure
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  res.json(appointment);
-});
-
-// Payments - supports Stripe Checkout when STRIPE_SECRET is provided, otherwise mock
-let stripe = null;
-if (process.env.STRIPE_SECRET) {
-  try {
-    stripe = require('stripe')(process.env.STRIPE_SECRET);
-  } catch (e) {
-    console.warn('Stripe package not installed or invalid STRIPE_SECRET');
-  }
-}
-
-app.post('/api/payments', async (req, res) => {
-  const { amount, currency = 'inr', description, billId, successUrl, cancelUrl } = req.body || {};
-  // minimal validation
-  if (!amount) return res.status(400).json({ error: 'Missing amount' });
-
-  if (stripe) {
-    try {
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{ price_data: { currency, product_data: { name: description || 'Hospital Payment' }, unit_amount: Math.round(Number(amount) * 100) }, quantity: 1 }],
-        mode: 'payment',
-        success_url: successUrl || `${req.headers.origin || 'http://localhost:3000'}/payments/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: cancelUrl || `${req.headers.origin || 'http://localhost:3000'}/payments/cancel`
-      });
-      return res.json({ url: session.url, sessionId: session.id });
-    } catch (err) {
-      console.error('Stripe checkout error', err.message || err);
-      return res.status(500).json({ error: 'Stripe error' });
+// Add response interceptor to handle errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid, clear auth
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      window.location.href = '/admin/login';
     }
+    return Promise.reject(error);
   }
+);
 
-  // Mock fallback: return a URL that simulates success (frontend will handle)
-  const mockUrl = `${req.headers.origin || 'http://localhost:3000'}/mock-pay?billId=${encodeURIComponent(billId || '')}&amount=${encodeURIComponent(amount)}`;
-  return res.json({ url: mockUrl });
-});
+// ==================== PATIENT ENDPOINTS ====================
+export const patientAPI = {
+  getAll: () => apiClient.get('/patients'),
+  getById: (id) => apiClient.get(`/patients/${id}`),
+  create: (data) => apiClient.post('/patients', data),
+  update: (id, data) => apiClient.put(`/patients/${id}`, data),
+  delete: (id) => apiClient.delete(`/patients/${id}`),
+  search: (query) => apiClient.get('/patients/search', { params: { q: query } }),
+};
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ==================== DOCTOR ENDPOINTS ====================
+export const doctorAPI = {
+  getAll: () => apiClient.get('/doctors'),
+  getById: (id) => apiClient.get(`/doctors/${id}`),
+  create: (data) => apiClient.post('/doctors', data),
+  update: (id, data) => apiClient.put(`/doctors/${id}`, data),
+  delete: (id) => apiClient.delete(`/doctors/${id}`),
+  getBySpecialty: (specialty) => apiClient.get('/doctors/specialty', { params: { specialty } }),
+  getAvailable: (date) => apiClient.get('/doctors/available', { params: { date } }),
+};
+
+// ==================== APPOINTMENT ENDPOINTS ====================
+export const appointmentAPI = {
+  getAll: () => apiClient.get('/appointments'),
+  getById: (id) => apiClient.get(`/appointments/${id}`),
+  create: (data) => apiClient.post('/appointments', data),
+  update: (id, data) => apiClient.put(`/appointments/${id}`, data),
+  delete: (id) => apiClient.delete(`/appointments/${id}`),
+  reschedule: (id, data) => apiClient.put(`/appointments/${id}/reschedule`, data),
+  cancel: (id, data) => apiClient.put(`/appointments/${id}/cancel`, data),
+  getByPatient: (patientId) => apiClient.get(`/appointments/patient/${patientId}`),
+  getByDoctor: (doctorId) => apiClient.get(`/appointments/doctor/${doctorId}`),
+  getToday: () => apiClient.get('/appointments/today'),
+};
+
+// ==================== BILLING ENDPOINTS ====================
+export const billingAPI = {
+  getAll: () => apiClient.get('/billing'),
+  getById: (id) => apiClient.get(`/billing/${id}`),
+  create: (data) => apiClient.post('/billing', data),
+  update: (id, data) => apiClient.put(`/billing/${id}`, data),
+  delete: (id) => apiClient.delete(`/billing/${id}`),
+  updatePayment: (id, data) => apiClient.put(`/billing/${id}/payment`, data),
+  getByPatient: (patientId) => apiClient.get(`/billing/patient/${patientId}`),
+  getPending: () => apiClient.get('/billing/pending'),
+};
+
+// ==================== LABORATORY ENDPOINTS ====================
+export const laboratoryAPI = {
+  getAll: () => apiClient.get('/laboratory'),
+  getById: (id) => apiClient.get(`/laboratory/${id}`),
+  create: (data) => apiClient.post('/laboratory', data),
+  update: (id, data) => apiClient.put(`/laboratory/${id}`, data),
+  delete: (id) => apiClient.delete(`/laboratory/${id}`),
+  uploadResults: (id, data) => apiClient.post(`/laboratory/${id}/results`, data),
+  getByPatient: (patientId) => apiClient.get(`/laboratory/patient/${patientId}`),
+  getPending: () => apiClient.get('/laboratory/pending'),
+};
+
+// ==================== STAFF ENDPOINTS ====================
+export const staffAPI = {
+  getAll: () => apiClient.get('/staff'),
+  getById: (id) => apiClient.get(`/staff/${id}`),
+  create: (data) => apiClient.post('/staff', data),
+  update: (id, data) => apiClient.put(`/staff/${id}`, data),
+  delete: (id) => apiClient.delete(`/staff/${id}`),
+  getByRole: (role) => apiClient.get('/staff/role', { params: { role } }),
+  getByDepartment: (dept) => apiClient.get('/staff/department', { params: { dept } }),
+};
+
+// ==================== WARD/ROOM ENDPOINTS ====================
+export const wardAPI = {
+  getAll: () => apiClient.get('/wards'),
+  getById: (id) => apiClient.get(`/wards/${id}`),
+  create: (data) => apiClient.post('/wards', data),
+  update: (id, data) => apiClient.put(`/wards/${id}`, data),
+  delete: (id) => apiClient.delete(`/wards/${id}`),
+  getAvailableBeds: () => apiClient.get('/wards/available-beds'),
+  updateBedStatus: (wardId, bedNo, status) => 
+    apiClient.put(`/wards/${wardId}/beds/${bedNo}`, { status }),
+};
+
+// ==================== TPA ENDPOINTS ====================
+export const tpaAPI = {
+  getAll: () => apiClient.get('/tpa'),
+  getById: (id) => apiClient.get(`/tpa/${id}`),
+  create: (data) => apiClient.post('/tpa', data),
+  update: (id, data) => apiClient.put(`/tpa/${id}`, data),
+  delete: (id) => apiClient.delete(`/tpa/${id}`),
+  submitClaim: (id, data) => apiClient.post(`/tpa/${id}/submit`, data),
+  getByPatient: (patientId) => apiClient.get(`/tpa/patient/${patientId}`),
+};
+
+// ==================== INSURANCE ENDPOINTS ====================
+export const insuranceAPI = {
+  policies: {
+    getAll: () => apiClient.get('/insurance-policies'),
+    getById: (id) => apiClient.get(`/insurance-policies/${id}`),
+    create: (data) => apiClient.post('/insurance-policies', data),
+    update: (id, data) => apiClient.put(`/insurance-policies/${id}`, data),
+    delete: (id) => apiClient.delete(`/insurance-policies/${id}`),
+    getByPatient: (patientId) => apiClient.get(`/insurance-policies/patient/${patientId}`),
+  },
+  claims: {
+    getAll: () => apiClient.get('/insurance-claims'),
+    getById: (id) => apiClient.get(`/insurance-claims/${id}`),
+    create: (data) => apiClient.post('/insurance-claims', data),
+    update: (id, data) => apiClient.put(`/insurance-claims/${id}`, data),
+    delete: (id) => apiClient.delete(`/insurance-claims/${id}`),
+    getByPatient: (patientId) => apiClient.get(`/insurance-claims/patient/${patientId}`),
+    submitClaim: (id, data) => apiClient.post(`/insurance-claims/${id}/submit`, data),
+  },
+};
+
+// ==================== OPD/IPD ENDPOINTS ====================
+export const opdAPI = {
+  getAll: () => apiClient.get('/opd'),
+  getById: (id) => apiClient.get(`/opd/${id}`),
+  create: (data) => apiClient.post('/opd', data),
+  update: (id, data) => apiClient.put(`/opd/${id}`, data),
+  delete: (id) => apiClient.delete(`/opd/${id}`),
+};
+
+export const ipdAPI = {
+  getAll: () => apiClient.get('/ipd'),
+  getById: (id) => apiClient.get(`/ipd/${id}`),
+  create: (data) => apiClient.post('/ipd', data),
+  update: (id, data) => apiClient.put(`/ipd/${id}`, data),
+  delete: (id) => apiClient.delete(`/ipd/${id}`),
+  discharge: (id, data) => apiClient.post(`/ipd/${id}/discharge`, data),
+};
+
+// ==================== AUTH ENDPOINTS ====================
+export const authAPI = {
+  login: (credentials) => apiClient.post('/auth/login', credentials),
+  register: (userData) => apiClient.post('/auth/register', userData),
+  logout: () => apiClient.post('/auth/logout'),
+  getCurrentUser: () => apiClient.get('/auth/me'),
+  refreshToken: () => apiClient.post('/auth/refresh'),
+  changePassword: (data) => apiClient.post('/auth/change-password', data),
+};
+
+// ==================== REPORTS ENDPOINTS ====================
+export const reportsAPI = {
+  getPatientReport: (patientId) => apiClient.get(`/reports/patient/${patientId}`),
+  getFinancialReport: (params) => apiClient.get('/reports/financial', { params }),
+  getOccupancyReport: (params) => apiClient.get('/reports/occupancy', { params }),
+  getStaffReport: (params) => apiClient.get('/reports/staff', { params }),
+  exportReport: (type, params) => apiClient.get(`/reports/export/${type}`, { params }),
+};
+
+export default apiClient;
