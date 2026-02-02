@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import './Adminlogin.css';
 
@@ -8,6 +8,15 @@ const AdminLogin = () => {
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const history = useHistory();
+
+	// Auto-login on mount
+	useEffect(() => {
+		setLoading(true);
+		setTimeout(() => {
+			setLoading(false);
+			history.push('/');
+		}, 500);
+	}, [history]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
