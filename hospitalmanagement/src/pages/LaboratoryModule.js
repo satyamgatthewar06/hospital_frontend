@@ -2,7 +2,6 @@ import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/LaboratoryModule.css';
 import ThemeToggle from '../components/ThemeToggle';
-import AnalyticsDashboard from '../components/AnalyticsDashboard';
 import BillingActions from '../components/BillingActions';
 
 const LaboratoryModule = () => {
@@ -328,8 +327,6 @@ const LaboratoryModule = () => {
       )}
 
       <BillingActions bill={selectedBill} bills={bills} allData={hospitalData} />
-
-      <Route path="/analytics" component={AnalyticsDashboard} />
     </div>
   );
 };
