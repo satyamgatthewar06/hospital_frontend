@@ -14,6 +14,15 @@ import OPDPage from './pages/OPDPage';
 import InsuranceClaimsPage from './pages/InsuranceClaimsPage';
 import InsurancePoliciesPage from './pages/InsurancePoliciesPage';
 import TPAPage from './pages/TPAPage';
+import EnhancedPatientManagement from './pages/EnhancedPatientManagement';
+import EnhancedDoctorModule from './pages/EnhancedDoctorModule';
+import EnhancedAppointments from './pages/EnhancedAppointments';
+import ComprehensiveBilling from './pages/ComprehensiveBilling';
+import AdminPanelDashboard from './pages/AdminPanelDashboard';
+import LaboratoryModule from './pages/LaboratoryModule';
+import RoomManagement from './pages/RoomManagement';
+import EnhancedStaffManagement from './pages/EnhancedStaffManagement';
+import TPAManagement from './pages/TPAManagement';
 import AdminLogin from './components/AdminLogin';
 import { HospitalProvider } from './context/HospitalContext';
 import './App.css';
@@ -40,6 +49,15 @@ const MainContent = () => {
         <Route path="/insurance-claims" component={InsuranceClaimsPage} />
         <Route path="/insurance-policies" component={InsurancePoliciesPage} />
         <Route path="/tpa" component={TPAPage} />
+        <Route path="/enhanced-patients" component={EnhancedPatientManagement} />
+        <Route path="/enhanced-doctors" component={EnhancedDoctorModule} />
+        <Route path="/enhanced-appointments" component={EnhancedAppointments} />
+        <Route path="/comprehensive-billing" component={ComprehensiveBilling} />
+        <Route path="/admin-dashboard" component={AdminPanelDashboard} />
+        <Route path="/laboratory-module" component={LaboratoryModule} />
+        <Route path="/room-management" component={RoomManagement} />
+        <Route path="/staff-management" component={EnhancedStaffManagement} />
+        <Route path="/tpa-management" component={TPAManagement} />
         <Route path="/admin/login" component={AdminLogin} />
       </Switch>
       {location.pathname === '/' && <Footer />}
