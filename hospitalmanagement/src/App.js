@@ -8,6 +8,12 @@ import DoctorsPage from './pages/DoctorsPage';
 import StaffPage from './pages/StaffPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import LaboratoryPage from './pages/LaboratoryPage';
+import WardPage from './pages/WardPage';
+import IPDPage from './pages/IPDPage';
+import OPDPage from './pages/OPDPage';
+import InsuranceClaimsPage from './pages/InsuranceClaimsPage';
+import InsurancePoliciesPage from './pages/InsurancePoliciesPage';
+import TPAPage from './pages/TPAPage';
 import AdminLogin from './components/AdminLogin';
 import { HospitalProvider } from './context/HospitalContext';
 import './App.css';
@@ -28,6 +34,12 @@ const MainContent = () => {
         <Route path="/doctors" component={DoctorsPage} />
         <Route path="/staff" component={StaffPage} />
         <Route path="/laboratory" component={LaboratoryPage} />
+        <Route path="/wards" component={WardPage} />
+        <Route path="/ipd" component={IPDPage} />
+        <Route path="/opd" component={OPDPage} />
+        <Route path="/insurance-claims" component={InsuranceClaimsPage} />
+        <Route path="/insurance-policies" component={InsurancePoliciesPage} />
+        <Route path="/tpa" component={TPAPage} />
         <Route path="/admin/login" component={AdminLogin} />
       </Switch>
       {location.pathname === '/' && <Footer />}

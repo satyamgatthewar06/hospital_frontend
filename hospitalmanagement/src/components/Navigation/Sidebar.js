@@ -6,10 +6,16 @@ const LINKS = [
   { to: '/', label: 'Dashboard', exact: true },
   { to: '/patients', label: 'Patients' },
   { to: '/appointments', label: 'Appointments' },
+  { to: '/opd', label: 'OPD' },
+  { to: '/ipd', label: 'IPD' },
+  { to: '/wards', label: 'Wards' },
   { to: '/billing', label: 'Billing' },
   { to: '/doctors', label: 'Doctors' },
   { to: '/staff', label: 'Staff' },
   { to: '/laboratory', label: 'Laboratory' },
+  { to: '/insurance-policies', label: 'Insurance Policies' },
+  { to: '/insurance-claims', label: 'Insurance Claims' },
+  { to: '/tpa', label: 'TPA' },
   { to: '/admin/login', label: 'Admin' },
 ];
 
