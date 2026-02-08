@@ -3,7 +3,7 @@ import { HospitalContext } from '../context/HospitalContext';
 import '../styles/TPAManagement.css';
 
 const TPAManagement = () => {
-  const { tpaRecords } = useContext(HospitalContext);
+  const { tpaRecords, patients } = useContext(HospitalContext);
   const [activeTab, setActiveTab] = useState('list');
   const [formData, setFormData] = useState({
     claimNumber: '',
@@ -44,11 +44,11 @@ const TPAManagement = () => {
 
   const filteredClaims = useMemo(() => {
     return claims.filter(claim => {
-      const matchesSearch = 
+      const matchesSearch =
         claim.claimNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         claim.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         claim.tpaName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesFilter = filterStatus === 'All' || claim.status === filterStatus;
       return matchesSearch && matchesFilter;
     });
@@ -133,7 +133,7 @@ const TPAManagement = () => {
         </body>
       </html>
     `;
-    
+
     const printWindow = window.open('', '', 'width=900,height=600');
     printWindow.document.write(docContent);
     printWindow.document.close();
@@ -205,34 +205,40 @@ const TPAManagement = () => {
                 <input
                   type="text"
                   value={formData.claimNumber}
-                  onChange={(e) => setFormData({...formData, claimNumber: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, claimNumber: e.target.value })}
                   required
                   placeholder="e.g., CLM-001"
                 />
               </div>
               <div className="form-group">
                 <label>Patient Name</label>
-                <input
-                  type="text"
+
+                <select
                   value={formData.patientName}
-                  onChange={(e) => setFormData({...formData, patientName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
                   required
-                  placeholder="Patient name"
-                />
+                >
+                  <option value="">Select Patient...</option>
+                  {patients && patients.map(p => (
+                    <option key={p.id} value={p.name || `${p.firstName} ${p.lastName}`}>
+                      {p.name || `${p.firstName} ${p.lastName}`} (ID: {p.id})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label>TPA Company</label>
-                <select value={formData.tpaName} onChange={(e) => setFormData({...formData, tpaName: e.target.value})} required>
+                <select value={formData.tpaName} onChange={(e) => setFormData({ ...formData, tpaName: e.target.value })} required>
                   <option value="">Select TPA...</option>
                   {tpaCompanies.map(tpa => <option key={tpa} value={tpa}>{tpa}</option>)}
                 </select>
               </div>
               <div className="form-group">
                 <label>Claim Status</label>
-                <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                   {claimStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                 </select>
               </div>
@@ -246,7 +252,7 @@ const TPAManagement = () => {
                   step="0.01"
                   min="0"
                   value={formData.billAmount}
-                  onChange={(e) => setFormData({...formData, billAmount: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, billAmount: e.target.value })}
                   required
                 />
               </div>
@@ -257,7 +263,7 @@ const TPAManagement = () => {
                   step="0.01"
                   min="0"
                   value={formData.claimAmount}
-                  onChange={(e) => setFormData({...formData, claimAmount: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, claimAmount: e.target.value })}
                   required
                 />
               </div>
@@ -271,7 +277,7 @@ const TPAManagement = () => {
                   step="0.01"
                   min="0"
                   value={formData.deductionAmount}
-                  onChange={(e) => setFormData({...formData, deductionAmount: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, deductionAmount: e.target.value })}
                 />
               </div>
               <div className="form-group">
@@ -279,7 +285,7 @@ const TPAManagement = () => {
                 <input
                   type="date"
                   value={formData.submissionDate}
-                  onChange={(e) => setFormData({...formData, submissionDate: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, submissionDate: e.target.value })}
                   required
                 />
               </div>
@@ -289,7 +295,7 @@ const TPAManagement = () => {
               <label>Remarks</label>
               <textarea
                 value={formData.remarks}
-                onChange={(e) => setFormData({...formData, remarks: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
                 placeholder="Additional remarks or notes"
                 rows="3"
               />
@@ -307,7 +313,7 @@ const TPAManagement = () => {
         <div className="list-section">
           <div className="list-header">
             <h2>TPA Claims</h2>
-            <div style={{display: 'flex', gap: '1rem'}}>
+            <div style={{ display: 'flex', gap: '1rem' }}>
               <input
                 type="text"
                 placeholder="Search claims..."

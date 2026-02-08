@@ -28,7 +28,15 @@ const AdminLogin = () => {
 			const user = await login(username, password);
 			console.log('Login successful:', user);
 			setLoading(false);
-			history.push('/');
+
+			// Redirect based on role
+			if (user.role === 'DOCTOR') {
+				history.push('/doctor-dashboard');
+			} else if (user.role === 'ADMIN') {
+				history.push('/admin-dashboard');
+			} else {
+				history.push('/');
+			}
 		} catch (err) {
 			setLoading(false);
 			// Fallback to default credentials for demo/development

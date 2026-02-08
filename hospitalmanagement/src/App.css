@@ -1,355 +1,117 @@
+/* App.css - Neumorphic Components */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f3f4f6;
 }
 
 .App {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background-color: var(--bg-body);
 }
 
-.main-content {
-  margin-left: 250px;
-  margin-top: 0;
-  padding: 2rem;
-  flex: 1;
-  transition: margin-left 0.3s ease-in-out;
-}
-
-/* Responsive: Adjust main content for closed sidebar */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 80px;
-  }
-}
-
-/* Navbar Styles */
-.navbar {
-  background: linear-gradient(90deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
-  padding: 1.5rem 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 4px solid #fbbf24;
-}
-
-.navbar h1 {
-  color: white;
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.nav-links {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.1);
-  font-weight: 500;
-  border: 2px solid transparent;
-}
-
-.nav-links a:hover {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #1e3c72;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
-}
-
-/* Dashboard Styles */
-.dashboard {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.dashboard-title {
-  color: #1e3a8a;
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-/* Cards Container */
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
+/* --- Neumorphic Card --- */
 .card {
-  background: white;
-  border-radius: 15px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: all 0.3s ease;
-  border: 2px solid #e5e7eb;
+
+  /* The "Lifted" Neumorphic Look */
+  box-shadow: var(--neu-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  /* Highlighting top/left edge */
+
+  margin-bottom: 2rem;
+  transition: transform 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  /* Subtle lift on hover? Optional */
+  /* transform: translateY(-2px); */
 }
 
-.card-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.card-title {
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin-bottom: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-value {
-  color: #1e3a8a;
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin: 0;
-}
-
-.card-count {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin: 0.5rem 0 0 0;
-}
-
-/* Table Styles */
-.table-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-}
-
-.table-title {
-  color: #1e3a8a;
-  margin-bottom: 1.5rem;
-  font-size: 1.3rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-table thead th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-table tbody tr:hover {
-  background-color: #f9fafb;
-  box-shadow: inset 0 0 8px rgba(102, 126, 234, 0.1);
-}
-
-table tbody td {
-  padding: 1rem;
-  color: #374151;
-}
-
-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-/* Button Styles */
+/* --- Neumorphic Buttons --- */
 .btn {
   padding: 0.8rem 1.5rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 12px;
+  /* Soft round */
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
+/* Primary Button - "Pressed" look usually doesn't apply to primary solid colors in neumorphism 
+   unless we do a colored shadow. Let's do a "Soft Glossy" look for primary. */
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #60A5FA 100%);
   color: white;
+  box-shadow: 6px 6px 12px rgba(59, 130, 246, 0.3), -6px -6px 12px rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
+  filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 8px 8px 16px rgba(59, 130, 246, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.2);
 }
 
-/* Form Styles */
-.form-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.form-container h3 {
-  color: #1e3a8a;
-  margin-bottom: 1.5rem;
-  font-size: 1.3rem;
+/* Secondary Button - The Classic Neumorphic Button */
+.btn-secondary {
+  background: var(--bg-body);
+  color: var(--text-main);
+  box-shadow: var(--neu-shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
+.btn-secondary:hover {
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 12px #D1D9E6, -6px -6px 12px #FFFFFF;
 }
 
+.btn-secondary:active {
+  box-shadow: var(--neu-pressed-sm);
+  transform: translateY(0);
+}
+
+/* Form Elements Neumorphism */
 .form-group label {
   display: block;
-  color: #1e3a8a;
+  margin-bottom: 0.6rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
 }
 
-.form-group input,
-.form-group select {
+.form-control,
+input[type="text"],
+input[type="file"],
+select {
   width: 100%;
-  padding: 0.8rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--bg-body);
+  color: var(--text-main);
 
-.form-group input:focus,
-.form-group select:focus {
+  /* Inner Shadow for Inputs */
+  box-shadow: var(--neu-pressed-sm);
+  transition: all 0.2s;
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border: 1px solid transparent;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 1rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.5rem;
-  }
-
-  .cards-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .card {
-    padding: 1.5rem;
-  }
-
-  .card-icon {
-    font-size: 2rem;
-  }
-
-  .card-value {
-    font-size: 2rem;
-  }
-
-  .form-container,
-  .table-container {
-    padding: 1.5rem;
-  }
-
-  table {
-    font-size: 0.9rem;
-  }
-
-  table thead th,
-  table tbody td {
-    padding: 0.8rem 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard {
-    padding: 0.8rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.2rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .cards-container {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-
-  .card {
-    padding: 1rem;
-  }
-
-  .card-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .card-title {
-    font-size: 0.85rem;
-  }
-
-  .card-value {
-    font-size: 1.8rem;
-  }
-
-  .form-container,
-  .table-container {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  table {
-    font-size: 0.8rem;
-  }
-
-  table thead th,
-  table tbody td {
-    padding: 0.6rem;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 0.7rem;
-  }
+.form-control:focus,
+input:focus,
+select:focus {
+  box-shadow: var(--neu-pressed);
+  color: var(--primary);
+  /* Optional: border-color: var(--primary-light); */
 }

@@ -8,7 +8,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const EnhancedDoctorModule = () => {
   const ctx = useContext(HospitalContext) || {};
   const doctors = ctx.doctors || [];
-  const addDoctor = ctx.addDoctor || (() => {});
+  const addDoctor = ctx.addDoctor || (() => { });
 
   const [activeTab, setActiveTab] = useState('list');
   const [form, setForm] = useState({
@@ -34,25 +34,45 @@ const EnhancedDoctorModule = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (form.name && form.email && form.specialization) {
-      addDoctor({
-        id: Date.now(),
-        ...form,
-        status: 'Active',
-        appointments: 0,
-        availability: schedules,
-      });
-      setForm({
-        name: '',
-        email: '',
-        phone: '',
-        specialization: '',
-        qualifications: '',
-        experience: '',
-        registrationNumber: '',
-        consultationFee: '',
-      });
-      setSchedules({});
-      setActiveTab('list');
+      // Split name into first and last name
+      const nameParts = form.name.split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ') || '.'; // Default last name if missing
+
+      const doctorData = {
+        doctorId: `DOC-${Date.now()}`,
+        firstName: firstName,
+        lastName: lastName,
+        email: form.email,
+        phone: form.phone,
+        specialization: form.specialization,
+        qualifications: form.qualifications,
+        department: form.specialization, // Use specialization as department
+        yearsOfExperience: form.experience ? parseInt(form.experience) : 0,
+        licenseNumber: form.registrationNumber,
+        availabilityStatus: 'available',
+        consultationFee: form.consultationFee
+      };
+
+      addDoctor(doctorData)
+        .then(() => {
+          setForm({
+            name: '',
+            email: '',
+            phone: '',
+            specialization: '',
+            qualifications: '',
+            experience: '',
+            registrationNumber: '',
+            consultationFee: '',
+          });
+          setSchedules({});
+          setActiveTab('list');
+        })
+        .catch(err => {
+          console.error("Failed to add doctor", err);
+          alert("Failed to add doctor. Please try again.");
+        });
     }
   };
 
@@ -109,13 +129,13 @@ const EnhancedDoctorModule = () => {
 
       {/* Tabs */}
       <div className="tabs-navigation card">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'list' ? 'active' : ''}`}
           onClick={() => setActiveTab('list')}
         >
           Doctor List
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('form');
@@ -298,7 +318,7 @@ const EnhancedDoctorModule = () => {
                     {doctor.consultationFee && <p><strong>Consultation Fee:</strong> ₹{doctor.consultationFee}</p>}
                   </div>
 
-                  <button 
+                  <button
                     className="btn btn-secondary btn-small"
                     onClick={() => setSelectedDoctor(selectedDoctor?.id === doctor.id ? null : doctor)}
                   >

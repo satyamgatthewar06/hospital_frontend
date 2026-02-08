@@ -1,18 +1,22 @@
+/* Patient Management Neumorphic Update */
 .chart-container {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: var(--neu-shadow);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .chart-title {
   text-align: center;
   margin-bottom: 20px;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-main);
 }
+
 .chart-legend {
   display: flex;
   justify-content: center;
@@ -33,7 +37,7 @@
 
 .dashboard-title {
   font-size: 2rem;
-  color: #667eea;
+  color: var(--primary);
   margin-bottom: 2rem;
   font-weight: 700;
 }
@@ -48,24 +52,26 @@
 
 .tab-btn {
   padding: 0.8rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--bg-body);
+  color: var(--text-secondary);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  box-shadow: var(--neu-shadow-sm);
 }
 
 .tab-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  color: var(--primary);
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  background: var(--bg-body);
+  color: var(--primary);
+  box-shadow: var(--neu-pressed);
 }
 
 /* Statistics Cards */
@@ -77,43 +83,22 @@
 }
 
 .patient-stat-card {
-  background: white;
+  background: var(--bg-card);
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow);
   text-align: center;
   transition: all 0.3s ease;
-  border-left: 4px solid #667eea;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .patient-stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.patient-stat-card.opd {
-  border-left-color: #3b82f6;
-}
-
-.patient-stat-card.ipd {
-  border-left-color: #ef4444;
-}
-
-.patient-stat-card.visits {
-  border-left-color: #10b981;
-}
-
-.patient-stat-card.avg {
-  border-left-color: #f59e0b;
-}
-
-.stat-icon-large {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  box-shadow: 6px 6px 12px #b8b9be, -6px -6px 12px #ffffff;
 }
 
 .patient-stat-card h3 {
-  color: #667eea;
+  color: var(--text-secondary);
   margin: 0.5rem 0;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -122,7 +107,7 @@
 
 .big-number {
   font-size: 2.5rem;
-  color: #667eea;
+  color: var(--primary);
   margin: 0.5rem 0 0 0;
   font-weight: 700;
 }
@@ -136,10 +121,11 @@
 }
 
 .chart-card {
-  background: white;
+  background: var(--bg-card);
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* Search Section */
@@ -577,7 +563,7 @@
 .dashboard-stats {
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.5rem;
 }
 
@@ -601,7 +587,7 @@
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 8px;
   border-left: 4px solid #2563eb;
-  animation: fadeUp 0.4s cubic-bezier(.2,.9,.3,1) both;
+  animation: fadeUp 0.4s cubic-bezier(.2, .9, .3, 1) both;
 }
 
 .stat-label {
@@ -621,7 +607,7 @@
 .chart-section {
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.5rem;
 }
 
@@ -641,7 +627,7 @@
   display: flex;
   gap: 1rem;
   align-items: center;
-  animation: fadeUp 0.5s cubic-bezier(.2,.9,.3,1) both;
+  animation: fadeUp 0.5s cubic-bezier(.2, .9, .3, 1) both;
 }
 
 .bar-container {
@@ -662,7 +648,7 @@
   justify-content: flex-end;
   padding-right: 0.75rem;
   min-width: 40px;
-  animation: slideInBar 0.8s cubic-bezier(.2,.9,.3,1) both;
+  animation: slideInBar 0.8s cubic-bezier(.2, .9, .3, 1) both;
   transition: all 0.3s ease;
 }
 
@@ -675,7 +661,7 @@
   font-weight: 700;
   color: #fff;
   font-size: 0.9rem;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .bar-label {
@@ -700,7 +686,7 @@
 .add-patient-form {
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.5rem;
 }
 
@@ -769,7 +755,7 @@
 .patients-list {
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .patients-list h2 {
@@ -817,13 +803,25 @@ table tbody tr:hover {
 
 /* Keyframes */
 @keyframes slideInBar {
-  from { width: 0; }
-  to { width: 100%; }
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */

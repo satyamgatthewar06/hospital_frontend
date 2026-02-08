@@ -1,3 +1,4 @@
+/* Appointments Page Neumorphic Update */
 .appointments-page {
   padding: 1.5rem;
   max-width: 1400px;
@@ -7,7 +8,7 @@
 .appointments-page h1 {
   font-size: 1.875rem;
   margin-bottom: 1.5rem;
-  color: #1f2937;
+  color: var(--text-main);
 }
 
 .appointments-container {
@@ -18,62 +19,68 @@
 
 /* Form Card */
 .appointment-form {
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--neu-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .appointment-form h2 {
   font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
+  padding: 0.75rem;
+  background: var(--bg-body);
+  border: none;
+  border-radius: 8px;
   font-size: 0.95rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box;
+  transition: all 0.2s ease;
+  box-shadow: var(--neu-pressed-sm);
+  color: var(--text-main);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: var(--neu-pressed);
+  color: var(--primary);
 }
 
 .btn-primary {
   width: 100%;
-  padding: 0.75rem;
-  background: #2563eb;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--primary) 0%, #60A5FA 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow: 6px 6px 12px rgba(59, 130, 246, 0.3), -6px -6px 12px rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
-  background: #1d4ed8;
+  transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
 .btn-primary:active {
@@ -82,61 +89,69 @@
 
 /* Doctors Grid */
 .doctors-list {
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--neu-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .doctors-list h2 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
-  color: #1f2937;
+  color: var(--text-main);
 }
 
 .doctors-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .doctor-card {
-  padding: 1rem;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-left: 4px solid #2563eb;
-  border-radius: 6px;
-  animation: fadeUp 0.4s cubic-bezier(.2,.9,.3,1) both;
+  padding: 1.25rem;
+  background: var(--bg-body);
+  border-radius: 12px;
+  box-shadow: var(--neu-shadow-sm);
+  transition: transform 0.2s;
+}
+
+.doctor-card:hover {
+  transform: translateY(-2px);
 }
 
 .doctor-card h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.95rem;
-  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text-main);
 }
 
 .doctor-card .specialty {
   margin: 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 /* Appointments List */
 .appointments-list {
   grid-column: 1 / -1;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--neu-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .appointments-list h2 {
   font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
 }
 
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: var(--text-light);
   font-style: italic;
 }
 

@@ -7,7 +7,8 @@ const OPD_DEPARTMENTS = ['Cardiology', 'Neurology', 'Orthopedics', 'Dermatology'
 const OPDPage = () => {
   const ctx = useContext(HospitalContext) || {};
   const opdRecords = ctx.opdRecords || [];
-  const addOPDRecord = ctx.addOPDRecord || (() => {});
+  const doctors = ctx.doctors || [];
+  const addOPDRecord = ctx.addOPDRecord || (() => { });
 
   const [form, setForm] = useState({
     patientName: '',
@@ -141,13 +142,18 @@ const OPDPage = () => {
           <div className="form-row">
             <div className="form-group">
               <label>Consulting Doctor</label>
-              <input
-                type="text"
+              <select
                 name="doctorName"
                 value={form.doctorName}
                 onChange={handleChange}
-                placeholder="Dr. Name"
-              />
+              >
+                <option value="">-- Select Doctor --</option>
+                {doctors.map(doc => (
+                  <option key={doc.id} value={`${doc.firstName} ${doc.lastName}`}>
+                    {doc.firstName} {doc.lastName} {doc.specialization ? `(${doc.specialization})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Consultation Fee (₹)</label>

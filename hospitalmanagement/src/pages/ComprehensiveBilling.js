@@ -6,7 +6,7 @@ const ComprehensiveBilling = () => {
   const ctx = useContext(HospitalContext) || {};
   const contextBills = ctx.bills || [];
   const patients = ctx.patients || [];
-  const addBill = ctx.addBill || (() => {});
+  const addBill = ctx.addBill || (() => { });
 
   const [localBills, setLocalBills] = useState([]);
   useEffect(() => {
@@ -143,11 +143,55 @@ const ComprehensiveBilling = () => {
     printWindow.print();
   };
 
+  // Combine patients from all sources
+  const allPatients = useMemo(() => {
+    const uniquePatients = new Map();
+
+    // Helper to add patient
+    const add = (name, id, source) => {
+      if (!name) return;
+      // Normalise name for uniqueness check
+      const key = name.toLowerCase().trim();
+      if (!uniquePatients.has(key)) {
+        uniquePatients.set(key, { name: name, id: id, source: source });
+      }
+    };
+
+    // 1. Add from Patients module
+    patients.forEach(p => add(p.name || `${p.firstName} ${p.lastName}`, p.id, 'Patient DB'));
+
+    // 2. Add from OPD Records
+    if (ctx.opdRecords) {
+      ctx.opdRecords.forEach(r => add(r.patientName, r.patientId, 'OPD'));
+    }
+
+    // 3. Add from Appointments
+    if (ctx.appointments) {
+      ctx.appointments.forEach(a => add(a.patientName, a.patientId, 'Appointment'));
+    }
+
+    // 4. Add from IPD Records (if available in context)
+    if (ctx.ipdRecords) {
+      ctx.ipdRecords.forEach(i => add(i.patientName, i.patientId, 'IPD'));
+    }
+
+    return Array.from(uniquePatients.values());
+  }, [patients, ctx.opdRecords, ctx.appointments, ctx.ipdRecords]);
+
+  const handlePatientSelect = (e) => {
+    const selectedName = e.target.value;
+    const patient = allPatients.find(p => p.name === selectedName);
+    setForm(prev => ({
+      ...prev,
+      patientName: selectedName,
+      patientId: patient ? patient.id : ''
+    }));
+  };
+
   return (
     <div className="comprehensive-billing fade-in">
       <h1>Comprehensive Billing & Payment System</h1>
-
-      {/* Statistics */}
+      {/* ... stats ... */}
       <div className="billing-stats card">
         <h2>Billing Overview</h2>
         <div className="stats-grid">
@@ -170,15 +214,15 @@ const ComprehensiveBilling = () => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="tabs-navigation card">
-        <button 
+        {/* ... tabs ... */}
+        <button
           className={`tab-btn ${activeTab === 'list' ? 'active' : ''}`}
           onClick={() => setActiveTab('list')}
         >
           Bills List
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('form');
@@ -201,7 +245,6 @@ const ComprehensiveBilling = () => {
         </button>
       </div>
 
-      {/* Generate Bill Form */}
       {activeTab === 'form' && (
         <div className="form-section card">
           <h2>Generate New Bill</h2>
@@ -209,20 +252,19 @@ const ComprehensiveBilling = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Patient Name *</label>
-                <input
-                  type="text"
+                <select
                   name="patientName"
                   value={form.patientName}
-                  onChange={handleInputChange}
-                  placeholder="Select patient"
-                  list="patientList"
+                  onChange={handlePatientSelect}
                   required
-                />
-                <datalist id="patientList">
-                  {patients.map(p => (
-                    <option key={p.id} value={p.name} />
+                >
+                  <option value="">-- Select Patient --</option>
+                  {allPatients.map((p, idx) => (
+                    <option key={idx} value={p.name}>
+                      {p.name} (Source: {p.source})
+                    </option>
                   ))}
-                </datalist>
+                </select>
               </div>
               <div className="form-group">
                 <label>Bill Date</label>
@@ -359,7 +401,7 @@ const ComprehensiveBilling = () => {
                     <p className="amount"><strong>Total:</strong> ₹{bill.finalAmount}</p>
                   </div>
 
-                  <button 
+                  <button
                     className="btn btn-secondary btn-small"
                     onClick={() => setSelectedBill(selectedBill?.id === bill.id ? null : bill)}
                   >
@@ -376,7 +418,7 @@ const ComprehensiveBilling = () => {
                         {bill.medicineCharges && <p>Medicine: ₹{bill.medicineCharges}</p>}
                         {bill.otherCharges && <p>Other: ₹{bill.otherCharges}</p>}
                       </div>
-                      <button 
+                      <button
                         className="btn btn-primary btn-small"
                         onClick={() => generateInvoice(bill)}
                       >

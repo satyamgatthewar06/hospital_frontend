@@ -1,48 +1,61 @@
-import React, { useContext } from 'react';
-import ThemeToggle from './ThemeToggle';
-import MobileMenu from './MobileMenu';
-import { ThemeContext } from '../context/ThemeContext';
+import React, { useState } from 'react';
+import { Search, Bell, Settings, User, LogOut } from 'lucide-react'; // Added LogOut for cleaner actions
 import './Header.css';
-
-const MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Near%20Ashwini%20Hospital%2C%20Wadiya%20Factory%2C%20Shivaji%20Nagar%2C%20Nanded%2C%20Maharashtra%2C%20431602';
+import NotificationCenter from './NotificationCenter';
 
 const Header = () => {
-  const themeContext = useContext(ThemeContext);
-  
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const handleComminSoon = () => {
+    alert("Record it says commin soon");
+  };
+
   return (
-    <>
-      <div className="top-info" role="banner" aria-label="hospital contact and address">
-        <div className="top-info-inner">
-          <a
-            className="address"
-            href={MAP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open hospital location in maps"
-          >
-            Near Ashwini Hospital, Wadiya Factory, Shivaji Nagar, Nanded, Maharashtra, 431602
-          </a>
-          <span className="sep">|</span>
-          <a className="tel" href="tel:02462247499" aria-label="Call Gadewar's hospital">Tel: 02462247499</a>
-        </div>
+    <header className="header">
+      {/* Search Bar - Updated Structure */}
+      <div className="search-container">
+        <Search className="search-icon" size={20} />
+        <input
+          type="text"
+          placeholder="Search patients, tests, or reports..."
+          className="search-input"
+        />
       </div>
 
-      <header className="site-header fade-in">
-        <div className="site-header-inner">
-          <h1>Gadewar's Accident & Maternity Hospital</h1>
-          <div className="leadership-info">
-            <span className="director">Director: Dr. P V Gadewar</span>
-            <span className="sep">|</span>
-            <span className="co-director">Co-Director: Dr. P P Gadewar</span>
+      {/* Header Actions */}
+      <div className="header-actions">
+        <button className="icon-btn settings-btn" onClick={handleComminSoon} title="Settings">
+          <Settings size={20} />
+        </button>
+
+        <div className="notification-wrapper" style={{ position: 'relative' }}>
+          <button
+            className={`icon-btn notification-btn ${showNotifications ? 'active' : ''}`}
+            onClick={handleComminSoon}
+            title="Notifications"
+          >
+            <Bell size={20} />
+            <span className="badge-dot" style={{
+              position: 'absolute', top: '10px', right: '10px', width: '8px', height: '8px',
+              backgroundColor: '#F56565', borderRadius: '50%', border: '2px solid white'
+            }}></span>
+          </button>
+          {/* NotificationCenter removed/hidden as per request to just show alert for now on valid click */}
+        </div>
+
+        {/* User Profile */}
+        <div className="user-profile" onClick={handleComminSoon} title="My Profile">
+          <div className="avatar">
+            <User size={20} />
           </div>
-          <p className="tagline">Compassionate care · 24/7 Emergency · Expert Maternity Services</p>
-          <div style={{ position: 'absolute', top: '10px', right: '20px' }}>
-            <ThemeToggle />
+          <div className="user-info">
+            <span className="user-name">Dr. Alfred Strange</span>
+            <span className="user-role">Administrator</span>
           </div>
         </div>
-        <MobileMenu />
-      </header>
-    </>
+      </div>
+    </header>
   );
 };
 

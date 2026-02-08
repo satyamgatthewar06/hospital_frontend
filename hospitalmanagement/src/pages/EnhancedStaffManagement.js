@@ -45,9 +45,9 @@ const EnhancedStaffManagement = () => {
 
   const filteredStaff = useMemo(() => {
     return staffList.filter(member => {
-      const matchesSearch = 
-        member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch =
+        (member.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (member.email || '').toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filterRole === 'All' || member.role === filterRole;
       return matchesSearch && matchesFilter;
     });
@@ -128,7 +128,7 @@ const EnhancedStaffManagement = () => {
           <div className="role-grid">
             {stats.roles.map(item => (
               <div key={item.role} className="role-item">
-                <span style={{color: getRoleColor(item.role)}} className="role-name">{item.role}</span>
+                <span style={{ color: getRoleColor(item.role) }} className="role-name">{item.role}</span>
                 <span className="role-count">{item.count}</span>
               </div>
             ))}
@@ -155,7 +155,7 @@ const EnhancedStaffManagement = () => {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="Full name"
                 />
@@ -165,7 +165,7 @@ const EnhancedStaffManagement = () => {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                   placeholder="Email address"
                 />
@@ -178,14 +178,14 @@ const EnhancedStaffManagement = () => {
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
                   placeholder="Phone number"
                 />
               </div>
               <div className="form-group">
                 <label>Role</label>
-                <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})}>
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
                   {roles.map(role => <option key={role} value={role}>{role}</option>)}
                 </select>
               </div>
@@ -194,7 +194,7 @@ const EnhancedStaffManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Department</label>
-                <select value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})}>
+                <select value={formData.department} onChange={(e) => setFormData({ ...formData, department: e.target.value })}>
                   {departments.map(dept => <option key={dept} value={dept}>{dept}</option>)}
                 </select>
               </div>
@@ -203,7 +203,7 @@ const EnhancedStaffManagement = () => {
                 <input
                   type="date"
                   value={formData.joiningDate}
-                  onChange={(e) => setFormData({...formData, joiningDate: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
                   required
                 />
               </div>
@@ -215,7 +215,7 @@ const EnhancedStaffManagement = () => {
                 <input
                   type="text"
                   value={formData.qualification}
-                  onChange={(e) => setFormData({...formData, qualification: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
                   placeholder="e.g., B.Sc Nursing"
                 />
               </div>
@@ -226,7 +226,7 @@ const EnhancedStaffManagement = () => {
                   step="0.01"
                   min="0"
                   value={formData.salary}
-                  onChange={(e) => setFormData({...formData, salary: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                   required
                 />
               </div>
@@ -244,7 +244,7 @@ const EnhancedStaffManagement = () => {
         <div className="list-section">
           <div className="list-header">
             <h2>Staff Directory</h2>
-            <div style={{display: 'flex', gap: '1rem'}}>
+            <div style={{ display: 'flex', gap: '1rem' }}>
               <input
                 type="text"
                 placeholder="Search staff..."
@@ -267,15 +267,15 @@ const EnhancedStaffManagement = () => {
                 <div key={idx} className="staff-card">
                   <div className="staff-header">
                     <h4>{member.name}</h4>
-                    <span className={`status ${member.status.toLowerCase()}`}>{member.status}</span>
+                    <span className={`status ${(member.status || '').toLowerCase()}`}>{member.status || 'Unknown'}</span>
                   </div>
                   <div className="staff-details">
-                    <p><strong>Role:</strong> <span style={{color: getRoleColor(member.role)}}>{member.role}</span></p>
+                    <p><strong>Role:</strong> <span style={{ color: getRoleColor(member.role) }}>{member.role}</span></p>
                     <p><strong>Department:</strong> {member.department}</p>
                     <p><strong>Email:</strong> {member.email}</p>
                     <p><strong>Phone:</strong> {member.phone}</p>
                     <p><strong>Qualification:</strong> {member.qualification || '-'}</p>
-                    <p><strong>Salary:</strong> ₹{member.salary.toLocaleString()}</p>
+                    <p><strong>Salary:</strong> ₹{(member.salary || 0).toLocaleString()}</p>
                     <p><strong>Joined:</strong> {member.joiningDate}</p>
                   </div>
                   <div className="staff-actions">

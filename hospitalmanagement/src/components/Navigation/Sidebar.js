@@ -1,90 +1,106 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Stethoscope,
+  Activity,
+  CreditCard,
+  UserCog,
+  FileText,
+  FileCheck,
+  ShieldCheck,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  FlaskConical,
+  Bed
+} from 'lucide-react';
 import './Sidebar.css';
 
 const LINKS = [
-  { to: '/', label: 'Dashboard', exact: true },
-  { to: '/admin-dashboard', label: 'Admin Dashboard' },
-  { to: '/enhanced-patients', label: 'Patients (Enhanced)' },
-  { to: '/patients', label: 'Patients' },
-  { to: '/enhanced-appointments', label: 'Appointments (Enhanced)' },
-  { to: '/appointments', label: 'Appointments' },
-  { to: '/opd', label: 'OPD' },
-  { to: '/ipd', label: 'IPD' },
-  { to: '/wards', label: 'Wards' },
-  { to: '/room-management', label: 'Room Management' },
-  { to: '/comprehensive-billing', label: 'Billing (Enhanced)' },
-  { to: '/billing', label: 'Billing' },
-  { to: '/enhanced-doctors', label: 'Doctors (Enhanced)' },
-  { to: '/doctors', label: 'Doctors' },
-  { to: '/staff-management', label: 'Staff (Enhanced)' },
-  { to: '/staff', label: 'Staff' },
-  { to: '/laboratory-module', label: 'Laboratory (Enhanced)' },
-  { to: '/laboratory', label: 'Laboratory' },
-  { to: '/insurance-policies', label: 'Insurance Policies' },
-  { to: '/insurance-claims', label: 'Insurance Claims' },
-  { to: '/tpa-management', label: 'TPA (Enhanced)' },
-  { to: '/tpa', label: 'TPA' },
-  { to: '/admin/login', label: 'Admin' },
+  { to: '/', label: 'Dashboard', exact: true, icon: LayoutDashboard },
+  { to: '/appointments', label: 'Appointments', icon: Calendar },
+  { to: '/enhanced-patients', label: 'Patients', icon: Users },
+  { to: '/enhanced-doctors', label: 'Doctors', icon: Stethoscope },
+  { to: '/opd', label: 'Departments', icon: Activity },
+  { to: '/staff-management', label: 'Staff', icon: UserCog },
+  { to: '/comprehensive-billing', label: 'Payments', icon: CreditCard },
+  { to: '/admin-dashboard', label: 'Admin', icon: ShieldCheck },
+  { to: '/laboratory-module', label: 'Laboratory', icon: FlaskConical },
+  { to: '/ipd', label: 'IPD', icon: Bed },
+  { to: '/special-opd', label: 'Special OPD', icon: Stethoscope },
+  { to: '/insurance-policies', label: 'Insurance Policies', icon: FileText },
+  { to: '/insurance-claims', label: 'Insurance Claims', icon: FileCheck },
+  { to: '/consents', label: 'Consent PDF', icon: FileCheck },
 ];
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(window.innerWidth >= 1024);
+export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
 
-  useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 1024) setOpen(true);
-      else setOpen(false);
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
+  // Auto-collapse on small screens handled in Layout or parent usually, 
+  // but we can keep a listener here or just rely on props.
+  // For simplicity, we assume parent controls `collapsed`.
 
   return (
     <>
       <button
-        className={`hamburger ${open ? 'is-open' : ''}`}
-        aria-label="Toggle navigation"
-        onClick={() => setOpen(v => !v)}
+        className="mobile-toggle"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle Navigation"
       >
-        <span />
-        <span />
-        <span />
+        <Menu size={24} />
       </button>
 
-      <aside className={`sidebar ${open ? 'open' : 'closed'}`} aria-hidden={!open}>
-        <div className="sidebar-inner">
-          <div className="brand">
-            <h2>Gadewar's Hospital</h2>
+      {/* Overlay for mobile */}
+      <div
+        className={`sidebar-overlay ${mobileOpen ? 'show' : ''}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="brand-logo">
+            <div className="logo-icon">
+              <Activity size={24} color="white" />
+            </div>
+            {!collapsed && <h2 className="brand-name">WellNest</h2>}
           </div>
 
-          <nav className="nav">
-            {LINKS.map(link => (
+          <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {LINKS.map((link) => {
+            const Icon = link.icon;
+            return (
               <NavLink
                 key={link.to}
                 to={link.to}
                 exact={link.exact}
                 activeClassName="active"
-                className="nav-link"
-                onClick={() => {
-                  if (window.innerWidth < 1024) setOpen(false);
-                }}
+                className="nav-item"
+                onClick={() => setMobileOpen(false)}
               >
-                <span className="nav-label">{link.label}</span>
+                <div className="nav-icon">
+                  <Icon size={20} />
+                </div>
+                {!collapsed && <span className="nav-label">{link.label}</span>}
               </NavLink>
-            ))}
-          </nav>
+            );
+          })}
+        </nav>
 
-          <div className="sidebar-footer">
-            <small>© {new Date().getFullYear()} Gadewar's</small>
-          </div>
+        <div className="sidebar-footer">
+          <button className="logout-btn">
+            <LogOut size={20} />
+            {!collapsed && <span>Logout</span>}
+          </button>
         </div>
       </aside>
-
-      {/* overlay for mobile */}
-      {open && window.innerWidth < 1024 && (
-        <div className="sidebar-overlay" onClick={() => setOpen(false)} />
-      )}
     </>
   );
 }

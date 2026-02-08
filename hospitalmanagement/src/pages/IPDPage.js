@@ -1,11 +1,29 @@
 import React, { useState, useContext, useMemo } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/IPDPage.css';
+import IPDDetailView from '../components/IPD/IPDDetailView';
 
 const IPDPage = () => {
   const ctx = useContext(HospitalContext) || {};
   const ipdRecords = ctx.ipdRecords || [];
-  const addIPDRecord = ctx.addIPDRecord || (() => {});
+  const opdRecords = ctx.opdRecords || []; // Fetch OPD records
+  const addIPDRecord = ctx.addIPDRecord || (() => { });
+  const WARD_TYPES = ['General Ward', 'ICU', 'HDU', 'Private Ward', 'Pediatric Ward', 'Maternity Ward'];
+  const wards = ctx.wards || [];
+  const doctors = ctx.doctors || [];
+
+  // Extract unique OPD patients
+  const uniqueOpdPatients = useMemo(() => {
+    const patients = [];
+    const seen = new Set();
+    opdRecords.forEach(r => {
+      if (!seen.has(r.patientName)) {
+        seen.add(r.patientName);
+        patients.push({ name: r.patientName, id: r.patientId });
+      }
+    });
+    return patients;
+  }, [opdRecords]);
 
   const [form, setForm] = useState({
     patientName: '',
@@ -23,6 +41,16 @@ const IPDPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePatientChange = (e) => {
+    const selectedName = e.target.value;
+    const patient = uniqueOpdPatients.find(p => p.name === selectedName);
+    setForm(prev => ({
+      ...prev,
+      patientName: selectedName,
+      patientId: patient ? patient.id : '' // Auto-fill ID
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -56,6 +84,17 @@ const IPDPage = () => {
         : 0,
     };
   }, [ipdRecords]);
+
+  const handleViewDetails = (record) => {
+    setExpandedRecord(null); // Close expanded small view
+    setSelectedPatient(record);
+  };
+
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  if (selectedPatient) {
+    return <IPDDetailView ipdRecord={selectedPatient} onBack={() => setSelectedPatient(null)} />;
+  }
 
   return (
     <div className="ipd-page fade-in">
@@ -91,14 +130,17 @@ const IPDPage = () => {
           <div className="form-row">
             <div className="form-group">
               <label>Patient Name *</label>
-              <input
-                type="text"
+              <select
                 name="patientName"
                 value={form.patientName}
-                onChange={handleChange}
-                placeholder="Patient full name"
+                onChange={handlePatientChange}
                 required
-              />
+              >
+                <option value="">-- Select OPD Patient --</option>
+                {uniqueOpdPatients.map(p => (
+                  <option key={p.id + p.name} value={p.name}>{p.name} (ID: {p.id})</option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Patient ID *</label>
@@ -137,14 +179,18 @@ const IPDPage = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Ward Assigned</label>
-              <input
-                type="text"
+              <label>Ward Type *</label>
+              <select
                 name="ward"
                 value={form.ward}
                 onChange={handleChange}
-                placeholder="ICU Block A"
-              />
+                required
+              >
+                <option value="">-- Select Ward Type --</option>
+                {WARD_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Bed Number</label>
@@ -171,13 +217,18 @@ const IPDPage = () => {
             </div>
             <div className="form-group">
               <label>Attending Doctor</label>
-              <input
-                type="text"
+              <select
                 name="doctorName"
                 value={form.doctorName}
                 onChange={handleChange}
-                placeholder="Dr. Name"
-              />
+              >
+                <option value="">-- Select Doctor --</option>
+                {doctors.map(d => (
+                  <option key={d.id} value={`${d.firstName} ${d.lastName}`}>
+                    Dr. {d.firstName} {d.lastName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -206,18 +257,11 @@ const IPDPage = () => {
                 </div>
 
                 <button
-                  className="btn btn-secondary btn-small"
-                  onClick={() => setExpandedRecord(expandedRecord === record.id ? null : record.id)}
+                  className="btn btn-primary btn-small"
+                  onClick={() => handleViewDetails(record)}
                 >
-                  {expandedRecord === record.id ? 'Hide' : 'More'}
+                  Manage Patient
                 </button>
-
-                {expandedRecord === record.id && (
-                  <div className="record-expanded">
-                    {record.diagnosis && <p><strong>Diagnosis:</strong> {record.diagnosis}</p>}
-                    {record.doctorName && <p><strong>Doctor:</strong> {record.doctorName}</p>}
-                  </div>
-                )}
               </div>
             ))
           ) : (

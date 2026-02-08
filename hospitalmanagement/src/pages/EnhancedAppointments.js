@@ -7,8 +7,8 @@ const EnhancedAppointments = () => {
   const appointments = ctx.appointments || [];
   const doctors = ctx.doctors || [];
   const patients = ctx.patients || [];
-  const addAppointment = ctx.addAppointment || (() => {});
-  const updateAppointment = ctx.updateAppointment || (() => {});
+  const addAppointment = ctx.addAppointment || (() => { });
+  const updateAppointment = ctx.updateAppointment || (() => { });
 
   const [activeTab, setActiveTab] = useState('calendar');
   const [form, setForm] = useState({
@@ -32,26 +32,83 @@ const EnhancedAppointments = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.patientName && form.doctorName && form.appointmentDate && form.appointmentTime) {
-      addAppointment({
-        id: Date.now(),
-        ...form,
-        bookedDate: new Date().toISOString().split('T')[0],
-      });
-      setForm({
-        patientId: '',
-        patientName: '',
-        doctorId: '',
-        doctorName: '',
-        appointmentDate: '',
-        appointmentTime: '',
-        department: '',
-        reason: '',
-        status: 'Scheduled',
-      });
-      setActiveTab('calendar');
+    if (form.patientName && form.doctorId && form.appointmentDate && form.appointmentTime) {
+
+      let finalPatientId = null;
+
+      // 1. Check if patient exists
+      const existingPatient = patients.find(p => p.name.toLowerCase() === form.patientName.toLowerCase());
+
+      if (existingPatient) {
+        finalPatientId = existingPatient.id;
+      } else {
+        // 2. Create new patient if not found
+        // Backend requires: firstName, lastName, dateOfBirth, gender
+        // We will mock these for quick-add in Appointment
+        try {
+          const newPatientData = {
+            name: form.patientName,
+            dateOfBirth: '2000-01-01', // Default
+            gender: 'Other',          // Default
+            phone: '0000000000',      // Default
+            address: 'Unknown'        // Default
+          };
+
+          // We need addPatient from context. If not available, we fail.
+          if (ctx.addPatient) {
+            const res = await ctx.addPatient(newPatientData);
+            // Result structure might be res.data or res
+            finalPatientId = res.id || res.insertId || (res.data ? res.data.id : null);
+          } else {
+            alert("Configuration Error: Cannot create new patient (addPatient missing).");
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to auto-create patient:", err);
+          alert("Failed to create new patient record. Please add patient manually first.");
+          return;
+        }
+      }
+
+      const selectedDoctor = doctors.find(d => String(d.id) === String(form.doctorId));
+
+      if (!finalPatientId || !selectedDoctor) {
+        alert('Error: Invalid patient or doctor selection.');
+        return;
+      }
+
+      const appointmentData = {
+        appointmentNumber: `APT-${Date.now()}`,
+        patientId: finalPatientId, // Use the resolved ID
+        doctorId: selectedDoctor.id,
+        appointmentDate: `${form.appointmentDate} ${form.appointmentTime}:00`,
+        appointmentType: form.department || 'General',
+        reason: form.reason || 'Regular Checkup',
+        status: form.status || 'Scheduled',
+        notes: form.reason
+      };
+
+      addAppointment(appointmentData)
+        .then(() => {
+          setForm({
+            patientId: '',
+            patientName: '',
+            doctorId: '',
+            doctorName: '',
+            appointmentDate: '',
+            appointmentTime: '',
+            department: '',
+            reason: '',
+            status: 'Scheduled',
+          });
+          setActiveTab('calendar');
+        })
+        .catch(err => {
+          console.error("Failed to book appointment", err);
+          alert("Failed to book appointment. Please try again.");
+        });
     }
   };
 
@@ -112,19 +169,19 @@ const EnhancedAppointments = () => {
 
       {/* Tabs */}
       <div className="tabs-navigation card">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'calendar' ? 'active' : ''}`}
           onClick={() => setActiveTab('calendar')}
         >
           Calendar View
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'list' ? 'active' : ''}`}
           onClick={() => setActiveTab('list')}
         >
           Appointment List
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('form');
@@ -158,32 +215,33 @@ const EnhancedAppointments = () => {
                   name="patientName"
                   value={form.patientName}
                   onChange={handleInputChange}
-                  placeholder="Select or enter patient name"
-                  list="patientList"
+                  placeholder="Enter patient name"
                   required
                 />
-                <datalist id="patientList">
-                  {patients.map(p => (
-                    <option key={p.id} value={p.name} />
-                  ))}
-                </datalist>
               </div>
               <div className="form-group">
                 <label>Doctor Name *</label>
-                <input
-                  type="text"
-                  name="doctorName"
-                  value={form.doctorName}
-                  onChange={handleInputChange}
-                  placeholder="Select doctor"
-                  list="doctorList"
+                <select
+                  name="doctorId"
+                  value={form.doctorId}
+                  onChange={(e) => {
+                    const docId = e.target.value;
+                    const doc = doctors.find(d => String(d.id) === String(docId));
+                    setForm(prev => ({
+                      ...prev,
+                      doctorId: docId,
+                      doctorName: doc ? `${doc.firstName} ${doc.lastName}` : ''
+                    }));
+                  }}
                   required
-                />
-                <datalist id="doctorList">
+                >
+                  <option value="">-- Select Doctor --</option>
                   {doctors.map(d => (
-                    <option key={d.id} value={d.name} />
+                    <option key={d.id} value={d.id}>
+                      {d.firstName} {d.lastName} {d.specialization ? `(${d.specialization})` : ''}
+                    </option>
                   ))}
-                </datalist>
+                </select>
               </div>
             </div>
 

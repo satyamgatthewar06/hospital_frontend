@@ -6,8 +6,9 @@ const POLICY_TYPES = ['Health Insurance', 'Critical Illness', 'Accident Coverage
 
 const InsurancePoliciesPage = () => {
   const ctx = useContext(HospitalContext) || {};
+  const { patients } = ctx;
   const policies = ctx.insurancePolicies || [];
-  const addPolicy = ctx.addInsurancePolicy || (() => {});
+  const addPolicy = ctx.addInsurancePolicy || (() => { });
 
   const [form, setForm] = useState({
     policyNumber: '',
@@ -34,8 +35,9 @@ const InsurancePoliciesPage = () => {
     e.preventDefault();
     if (form.policyNumber && form.patientName && form.coverageAmount) {
       addPolicy({
-        id: Date.now(),
+        policyId: `POL-${Date.now()}`, // Backend expects policyId
         ...form,
+        insuranceProvider: form.insurer, // Backend expects insuranceProvider
       });
       setForm({
         policyNumber: '',
@@ -120,14 +122,28 @@ const InsurancePoliciesPage = () => {
           <div className="form-row">
             <div className="form-group">
               <label>Patient Name *</label>
-              <input
-                type="text"
+
+              <select
                 name="patientName"
                 value={form.patientName}
-                onChange={handleChange}
-                placeholder="Patient full name"
+                onChange={(e) => {
+                  const selectedName = e.target.value;
+                  const selectedPatient = patients.find(p => (p.name || `${p.firstName} ${p.lastName}`) === selectedName);
+                  setForm(prev => ({
+                    ...prev,
+                    patientName: selectedName,
+                    patientId: selectedPatient ? selectedPatient.id : ''
+                  }));
+                }}
                 required
-              />
+              >
+                <option value="">-- Select Patient --</option>
+                {patients && patients.map(p => (
+                  <option key={p.id} value={p.name || `${p.firstName} ${p.lastName}`}>
+                    {p.name || `${p.firstName} ${p.lastName}`} (ID: {p.id})
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Patient ID</label>

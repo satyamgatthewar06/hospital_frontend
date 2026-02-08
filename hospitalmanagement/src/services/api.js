@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API base URL from environment variables or use default
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -86,15 +86,25 @@ export const billingAPI = {
 };
 
 // ==================== LABORATORY ENDPOINTS ====================
+// ==================== LABORATORY ENDPOINTS ====================
 export const laboratoryAPI = {
-  getAll: () => apiClient.get('/laboratory'),
-  getById: (id) => apiClient.get(`/laboratory/${id}`),
-  create: (data) => apiClient.post('/laboratory', data),
-  update: (id, data) => apiClient.put(`/laboratory/${id}`, data),
-  delete: (id) => apiClient.delete(`/laboratory/${id}`),
-  uploadResults: (id, data) => apiClient.post(`/laboratory/${id}/results`, data),
-  getByPatient: (patientId) => apiClient.get(`/laboratory/patient/${patientId}`),
-  getPending: () => apiClient.get('/laboratory/pending'),
+  // Test Master
+  getAllTests: () => apiClient.get('/laboratory/tests'),
+  createTest: (data) => apiClient.post('/laboratory/tests', data),
+  updateTest: (id, data) => apiClient.put(`/laboratory/tests/${id}`, data),
+  deleteTest: (id) => apiClient.delete(`/laboratory/tests/${id}`),
+
+  // Requests (Sample Collection)
+  getAllRequests: (params) => apiClient.get('/laboratory/requests', { params }),
+  createRequest: (data) => apiClient.post('/laboratory/requests', data),
+  updateRequest: (id, data) => apiClient.put(`/laboratory/requests/${id}`, data),
+
+  // Bills
+  getAllBills: () => apiClient.get('/laboratory/bills'),
+  createBill: (data) => apiClient.post('/laboratory/bills', data),
+
+  // Legacy/Helper (keeping for backward compatibility if needed, or deprecating)
+  uploadResults: (id, data) => apiClient.put(`/laboratory/requests/${id}`, { ...data, status: 'Completed' }), // Mapping to updateRequest
 };
 
 // ==================== STAFF ENDPOINTS ====================
@@ -116,7 +126,7 @@ export const wardAPI = {
   update: (id, data) => apiClient.put(`/wards/${id}`, data),
   delete: (id) => apiClient.delete(`/wards/${id}`),
   getAvailableBeds: () => apiClient.get('/wards/available-beds'),
-  updateBedStatus: (wardId, bedNo, status) => 
+  updateBedStatus: (wardId, bedNo, status) =>
     apiClient.put(`/wards/${wardId}/beds/${bedNo}`, { status }),
 };
 

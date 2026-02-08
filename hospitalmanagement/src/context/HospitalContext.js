@@ -9,8 +9,11 @@ import {
   wardAPI,
   tpaAPI,
   insuranceAPI,
+  opdAPI,
   authAPI,
+  ipdAPI,
 } from '../services/api';
+import ipdDetailsAPI from '../services/ipdDetailsAPI';
 
 // Step 1: Create the context
 export const HospitalContext = createContext();
@@ -18,7 +21,7 @@ export const HospitalContext = createContext();
 // Step 2: Create the Provider component
 export function HospitalProvider({ children }) {
   // ==================== STATE MANAGEMENT ====================
-  
+
   // Data State
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -26,11 +29,13 @@ export function HospitalProvider({ children }) {
   const [bills, setBills] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [labTests, setLabTests] = useState([]);
-  const [testAssignments, setTestAssignments] = useState([]);
+  const [labRequests, setLabRequests] = useState([]);
+  const [labBills, setLabBills] = useState([]);
   const [wards, setWards] = useState([]);
   const [tpaRecords, setTPARecords] = useState([]);
   const [insurancePolicies, setInsurancePolicies] = useState([]);
   const [insuranceClaims, setInsuranceClaims] = useState([]);
+  const [opdRecords, setOpdRecords] = useState([]);
 
   // User & Auth State
   const [currentUser, setCurrentUser] = useState(null);
@@ -48,6 +53,7 @@ export function HospitalProvider({ children }) {
     wards: false,
     tpa: false,
     insurance: false,
+    opd: false,
   });
 
   const [errors, setErrors] = useState({
@@ -60,6 +66,7 @@ export function HospitalProvider({ children }) {
     wards: null,
     tpa: null,
     insurance: null,
+    opd: null,
   });
 
   // ==================== FETCH DATA FUNCTIONS ====================
@@ -124,15 +131,21 @@ export function HospitalProvider({ children }) {
     }
   };
 
-  // Fetch Laboratory Tests from Backend
-  const fetchLabTests = async () => {
+  // Fetch Laboratory Data (Tests, Requests, Bills)
+  const fetchLabData = async () => {
     try {
       setLoading(prev => ({ ...prev, laboratory: true }));
-      const response = await laboratoryAPI.getAll();
-      setLabTests(response.data.data || response.data);
+      const [testsRes, requestsRes, billsRes] = await Promise.all([
+        laboratoryAPI.getAllTests(),
+        laboratoryAPI.getAllRequests(),
+        laboratoryAPI.getAllBills()
+      ]);
+      setLabTests(testsRes.data.data || testsRes.data);
+      setLabRequests(requestsRes.data.data || requestsRes.data);
+      setLabBills(billsRes.data.data || billsRes.data);
       setErrors(prev => ({ ...prev, laboratory: null }));
     } catch (error) {
-      console.error('Error fetching lab tests:', error);
+      console.error('Error fetching lab data:', error);
       setErrors(prev => ({ ...prev, laboratory: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, laboratory: false }));
@@ -203,6 +216,21 @@ export function HospitalProvider({ children }) {
     }
   };
 
+  // Fetch OPD Records from Backend
+  const fetchOPDRecords = async () => {
+    try {
+      setLoading(prev => ({ ...prev, opd: true }));
+      const response = await opdAPI.getAll();
+      setOpdRecords(response.data.data || response.data);
+      setErrors(prev => ({ ...prev, opd: null }));
+    } catch (error) {
+      console.error('Error fetching OPD records:', error);
+      setErrors(prev => ({ ...prev, opd: error.message }));
+    } finally {
+      setLoading(prev => ({ ...prev, opd: false }));
+    }
+  };
+
   // ==================== CREATE FUNCTIONS ====================
 
   // Add Patient via Backend
@@ -225,6 +253,18 @@ export function HospitalProvider({ children }) {
       return response.data;
     } catch (error) {
       console.error('Error adding doctor:', error);
+      throw error;
+    }
+  };
+
+  // Add OPD Record
+  const addOPDRecord = async (opdData) => {
+    try {
+      const response = await opdAPI.create(opdData);
+      setOpdRecords(prev => [...prev, response.data.data || response.data]);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding OPD record:', error);
       throw error;
     }
   };
@@ -265,14 +305,50 @@ export function HospitalProvider({ children }) {
     }
   };
 
-  // Add Test Assignment
-  const addTestAssignment = async (testData) => {
+  // Add Insurance Policy
+  const addInsurancePolicy = async (policyData) => {
     try {
-      const response = await laboratoryAPI.create(testData);
+      const response = await insuranceAPI.policies.create(policyData);
+      setInsurancePolicies(prev => [...prev, response.data.data || response.data]);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding insurance policy:', error);
+      throw error;
+    }
+  };
+
+  // Add Lab Test (Master)
+  const addLabTest = async (testData) => {
+    try {
+      const response = await laboratoryAPI.createTest(testData);
       setLabTests(prev => [...prev, response.data.data || response.data]);
       return response.data;
     } catch (error) {
-      console.error('Error adding test:', error);
+      console.error('Error adding lab test:', error);
+      throw error;
+    }
+  };
+
+  // Add Lab Request (Sample Collection)
+  const addLabRequest = async (requestData) => {
+    try {
+      const response = await laboratoryAPI.createRequest(requestData);
+      setLabRequests(prev => [response.data.data || response.data, ...prev]);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding lab request:', error);
+      throw error;
+    }
+  };
+
+  // Add Lab Bill
+  const addLabBill = async (billData) => {
+    try {
+      const response = await laboratoryAPI.createBill(billData);
+      setLabBills(prev => [response.data.data || response.data, ...prev]);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding lab bill:', error);
       throw error;
     }
   };
@@ -291,14 +367,37 @@ export function HospitalProvider({ children }) {
     }
   };
 
-  // Update Test Results
-  const updateTestResults = async (testId, results) => {
+  // Update Test Results / Status
+  const updateLabRequest = async (id, updates) => {
     try {
-      const response = await laboratoryAPI.uploadResults(testId, results);
-      setLabTests(prev => prev.map(t => t.id === testId ? response.data.data || response.data : t));
+      const response = await laboratoryAPI.updateRequest(id, updates);
+      setLabRequests(prev => prev.map(r => r.id === id ? (response.data.data || response.data) : r));
       return response.data;
     } catch (error) {
-      console.error('Error updating test results:', error);
+      console.error('Error updating lab request:', error);
+      throw error;
+    }
+  };
+
+  // Update Lab Test Master
+  const updateLabTest = async (id, updates) => {
+    try {
+      const response = await laboratoryAPI.updateTest(id, updates);
+      setLabTests(prev => prev.map(t => t.id === id ? (response.data.data || response.data) : t));
+      return response.data;
+    } catch (error) {
+      console.error('Error updating lab test:', error);
+      throw error;
+    }
+  };
+
+  // Delete Lab Test Master
+  const deleteLabTest = async (id) => {
+    try {
+      await laboratoryAPI.deleteTest(id);
+      setLabTests(prev => prev.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Error deleting lab test:', error);
       throw error;
     }
   };
@@ -344,7 +443,7 @@ export function HospitalProvider({ children }) {
   const login = async (username, password) => {
     try {
       setLoading(prev => ({ ...prev, patients: true }));
-      const response = await authAPI.login({ username, password });
+      const response = await authAPI.login({ email: username, password });
       const user = response.data.user || response.data;
       const token = response.data.token;
 
@@ -362,7 +461,8 @@ export function HospitalProvider({ children }) {
         fetchDoctors(),
         fetchAppointments(),
         fetchBills(),
-        fetchLabTests(),
+        fetchBills(),
+        fetchLabData(),
         fetchStaff(),
         fetchWards(),
         fetchTPARecords(),
@@ -385,13 +485,16 @@ export function HospitalProvider({ children }) {
     setAuthToken(null);
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
-    
+
     // Clear all data
     setPatients([]);
     setDoctors([]);
     setAppointments([]);
     setBills([]);
+    setBills([]);
     setLabTests([]);
+    setLabRequests([]);
+    setLabBills([]);
     setStaff([]);
     setWards([]);
     setTPARecords([]);
@@ -421,11 +524,13 @@ export function HospitalProvider({ children }) {
               fetchDoctors(),
               fetchAppointments(),
               fetchBills(),
-              fetchLabTests(),
+              fetchBills(),
+              fetchLabData(),
               fetchStaff(),
               fetchWards(),
               fetchTPARecords(),
               fetchInsuranceData(),
+              fetchOPDRecords(),
             ]);
           })
           .catch(() => {
@@ -449,12 +554,20 @@ export function HospitalProvider({ children }) {
         staff,
         bills,
         appointments,
+        appointments,
         labTests,
-        testAssignments,
+        labRequests,
+        labBills,
         wards,
         tpaRecords,
         insurancePolicies,
         insuranceClaims,
+        opdRecords,
+
+        // IPD Details API
+        // IPD Details API
+        ipdDetailsAPI,
+        ipdAPI,
 
         // Auth
         currentUser,
@@ -468,11 +581,12 @@ export function HospitalProvider({ children }) {
         fetchDoctors,
         fetchAppointments,
         fetchBills,
-        fetchLabTests,
+        fetchLabData,
         fetchStaff,
         fetchWards,
         fetchTPARecords,
         fetchInsuranceData,
+        fetchOPDRecords,
 
         // Add Functions
         addPatient,
@@ -480,11 +594,17 @@ export function HospitalProvider({ children }) {
         addAppointment,
         addBill,
         addStaff,
-        addTestAssignment,
+        addLabTest,
+        addLabRequest,
+        addLabBill,
+        addOPDRecord,
+        addInsurancePolicy,
 
         // Update Functions
         updateBillPayment,
-        updateTestResults,
+        updateLabRequest,
+        updateLabTest,
+        deleteLabTest,
 
         // Delete Functions
         deletePatient,
