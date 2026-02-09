@@ -1,12 +1,14 @@
 import React, { useState, useContext } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { HospitalContext } from '../../context/HospitalContext';
 import '../../styles/AdminUsers.css';
 
 const ROLES = ['admin', 'doctor', 'accountant', 'lab', 'nurse'];
 
 function AdminUsers() {
-  const { users = [], addUser = () => {}, updateUser = () => {} } = useContext(HospitalContext);
+  const { users = [], addUser = () => { }, updateUser = () => { } } = useContext(HospitalContext);
   const [form, setForm] = useState({ username: '', name: '', role: 'doctor', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState(null);
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -37,7 +39,23 @@ function AdminUsers() {
           <select name="role" value={form.role} onChange={handleChange}>
             {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
-          <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="password" />
+          <div className="password-input-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="password"
+            />
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
         <button className="btn-submit" type="submit">Add User</button>
       </form>

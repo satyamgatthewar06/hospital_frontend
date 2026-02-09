@@ -203,4 +203,11 @@ export const reportsAPI = {
   exportReport: (type, params) => apiClient.get(`/reports/export/${type}`, { params }),
 };
 
+// ==================== SETTINGS ENDPOINTS ====================
+export const settingsAPI = {
+  get: (userId) => apiClient.get(`/settings/${userId}`),
+  save: (data) => apiClient.post('/settings', data),
+  delete: (userId) => apiClient.delete(`/settings/${userId}`),
+};
+
 export default apiClient;

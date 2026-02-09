@@ -221,6 +221,37 @@
   box-shadow: var(--neu-shadow-sm);
   color: var(--primary);
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: var(--neu-shadow-md);
+}
+
+.mobile-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Sidebar Overlay - Dark background when sidebar is open on mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
 }
 
 @media (max-width: 1024px) {
@@ -232,6 +263,7 @@
     transform: translateX(-100%);
     width: var(--sidebar-width);
     background: rgba(230, 238, 246, 0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sidebar.mobile-open {

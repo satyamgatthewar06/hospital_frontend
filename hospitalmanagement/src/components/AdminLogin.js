@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { HospitalContext } from '../context/HospitalContext';
 import './Adminlogin.css';
 
 const AdminLogin = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const history = useHistory();
@@ -71,12 +73,8 @@ const AdminLogin = () => {
 		} catch (err) {
 			setLoading(false);
 			// Fallback to default credentials for demo/development
-			// Updated to match backend seed data: admin@hospital.com / Admin@123
-			// Also keeping old simple 'admin' / 'admin123' for backward compatibility
-			const isSimpleAdmin = username === 'admin' && password === 'admin123';
-			const isSeedAdmin = username === 'admin@hospital.com' && password === 'Admin@123';
-
-			if ((isSimpleAdmin || isSeedAdmin) && role === 'ADMIN') {
+			// Note: This only works for ADMIN in this specific block, but can be expanded
+			if (username === 'admin' && password === 'admin123' && role === 'ADMIN') {
 				console.log('Using fallback demo credentials');
 
 				// Manually set auth state for demo
@@ -131,14 +129,24 @@ const AdminLogin = () => {
 				/>
 
 				<label>Password</label>
-				<input
-					type="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					required
-					placeholder="Enter password"
-					disabled={loading}
-				/>
+				<div className="password-input-wrapper">
+					<input
+						type={showPassword ? "text" : "password"}
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+						placeholder="Enter password"
+						disabled={loading}
+					/>
+					<button
+						type="button"
+						className="password-toggle-btn"
+						onClick={() => setShowPassword(!showPassword)}
+						aria-label={showPassword ? "Hide password" : "Show password"}
+					>
+						{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+					</button>
+				</div>
 
 				<div className="login-actions">
 					<button type="submit" className="btn-primary" disabled={loading}>
@@ -150,7 +158,7 @@ const AdminLogin = () => {
 				</div>
 
 				<div className="demo-credentials">
-					<small>Demo: admin@hospital.com / Admin@123</small>
+					<small>Demo: admin / admin123</small>
 				</div>
 			</form>
 		</div>

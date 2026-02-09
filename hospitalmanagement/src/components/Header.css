@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
+  /* Keep header inline on all screens */
   padding: 0 2rem;
   height: var(--header-height);
 
@@ -28,6 +30,10 @@
   border-radius: 50px;
   width: 100%;
   max-width: 450px;
+  min-width: 0;
+  /* Allow shrinking below content size */
+  flex-shrink: 1;
+  /* Allow search to shrink on smaller screens */
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
@@ -60,6 +66,8 @@
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  flex-shrink: 0;
+  /* Prevent actions from shrinking */
 }
 
 .icon-btn {
@@ -149,21 +157,134 @@
   font-weight: 500;
 }
 
-/* Mobile */
+/* Responsive Styles */
+
+/* Tablet and below (1024px) */
+@media (max-width: 1024px) {
+  .header {
+    padding: 0 1.5rem;
+    gap: 1rem;
+  }
+
+  .search-container {
+    max-width: 300px;
+  }
+
+  .header-actions {
+    gap: 0.8rem;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+  }
+
+  .user-role {
+    font-size: 0.7rem;
+  }
+}
+
+/* Mobile landscape and below (768px) */
 @media (max-width: 768px) {
   .header {
     padding: 0 1rem;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
   }
 
+  .search-container {
+    max-width: 180px;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .search-container input {
+    font-size: 0.85rem;
+  }
+
+  .search-icon {
+    margin-right: 0.5rem;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Hide user info text on mobile, keep avatar */
   .user-info {
     display: none;
   }
 
-  .search-container {
-    max-width: 200px;
+  .user-profile {
+    padding: 0.4rem;
   }
 
-  .user-profile {
-    padding: 0.5rem;
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Small mobile (480px) */
+@media (max-width: 480px) {
+  .header {
+    padding: 0 0.75rem;
+    height: 60px;
+  }
+
+  .search-container {
+    max-width: 140px;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .search-container input {
+    font-size: 0.8rem;
+  }
+
+  .search-container input::placeholder {
+    font-size: 0.75rem;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .header-actions {
+    gap: 0.4rem;
+  }
+
+  /* Hide settings button on very small screens */
+  .settings-btn {
+    display: none;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .avatar svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Extra small mobile (360px) */
+@media (max-width: 360px) {
+  .search-container {
+    max-width: 100px;
+  }
+
+  .search-container input::placeholder {
+    content: "Search...";
   }
 }

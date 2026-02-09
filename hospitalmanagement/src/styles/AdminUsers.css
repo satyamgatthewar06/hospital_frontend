@@ -2,25 +2,81 @@
   padding: 16px;
   margin-bottom: 20px;
 }
+
 .admin-user-form .form-row {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
+
 .admin-user-form input,
 .admin-user-form select {
   padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 .users-list table {
   width: 100%;
   border-collapse: collapse;
 }
-.users-list th, .users-list td {
+
+.users-list th,
+.users-list td {
   padding: 8px 10px;
   border-bottom: 1px solid #eee;
   text-align: left;
 }
-.message.success { background: #d4edda; color: #155724; padding: 8px; border-radius:4px; }
-.message.error { background: #f8d7da; color: #721c24; padding: 8px; border-radius:4px; }
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+/* Password Input with Eye Icon Toggle */
+.password-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding: 8px 10px;
+  padding-right: 2.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #718096;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #667eea;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  color: #667eea;
+}

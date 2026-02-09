@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Search, Bell, Settings, User, LogOut } from 'lucide-react'; // Added LogOut for cleaner actions
+import { Search, Bell, Settings as SettingsIcon, User, LogOut } from 'lucide-react';
 import './Header.css';
 import NotificationCenter from './NotificationCenter';
+import Settings from './Settings';
 
 const Header = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleComminSoon = () => {
     alert("Record it says commin soon");
@@ -25,8 +27,8 @@ const Header = () => {
 
       {/* Header Actions */}
       <div className="header-actions">
-        <button className="icon-btn settings-btn" onClick={handleComminSoon} title="Settings">
-          <Settings size={20} />
+        <button className="icon-btn settings-btn" onClick={() => setShowSettings(true)} title="Settings">
+          <SettingsIcon size={20} />
         </button>
 
         <div className="notification-wrapper" style={{ position: 'relative' }}>
@@ -55,6 +57,9 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Settings Panel */}
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </header>
   );
 };
