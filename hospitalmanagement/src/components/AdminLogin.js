@@ -71,8 +71,12 @@ const AdminLogin = () => {
 		} catch (err) {
 			setLoading(false);
 			// Fallback to default credentials for demo/development
-			// Note: This only works for ADMIN in this specific block, but can be expanded
-			if (username === 'admin' && password === 'admin123' && role === 'ADMIN') {
+			// Updated to match backend seed data: admin@hospital.com / Admin@123
+			// Also keeping old simple 'admin' / 'admin123' for backward compatibility
+			const isSimpleAdmin = username === 'admin' && password === 'admin123';
+			const isSeedAdmin = username === 'admin@hospital.com' && password === 'Admin@123';
+
+			if ((isSimpleAdmin || isSeedAdmin) && role === 'ADMIN') {
 				console.log('Using fallback demo credentials');
 
 				// Manually set auth state for demo
@@ -146,7 +150,7 @@ const AdminLogin = () => {
 				</div>
 
 				<div className="demo-credentials">
-					<small>Demo: admin / admin123</small>
+					<small>Demo: admin@hospital.com / Admin@123</small>
 				</div>
 			</form>
 		</div>
