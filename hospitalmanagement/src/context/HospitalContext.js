@@ -478,6 +478,32 @@ export function HospitalProvider({ children }) {
     }
   };
 
+  // Demo Login Function (Fallback when backend is down)
+  const demoLogin = (role) => {
+    const mockUser = {
+      _id: 'demo-user-id',
+      name: 'Demo User',
+      email: 'demo@hospital.com',
+      // Ensure role is exactly what the app expects (usually 'admin' lowercase in roles array, or 'ADMIN' in user obj?)
+      // PrivateRoute checks: roles.includes(currentUser.role)
+      // Routes say: roles={['admin', 'accountant']}
+      // So currentUser.role should be 'admin' (lowercase) or the check logic needs to handle case.
+      // Let's look at PrivateRoute again: roles.includes(currentUser?.role)
+      // Most roles in App.js are lowercase strings: 'admin', 'doctor'
+      // But AdminLogin sets role as 'ADMIN' (uppercase).
+      // We should normalize it here.
+      role: role ? role.toLowerCase() : 'admin',
+    };
+    setCurrentUser(mockUser);
+    setIsAuthenticated(true);
+    // Set a fake token to persist auth state on reload/redirect
+    const fakeToken = 'demo-token-' + Date.now();
+    setAuthToken(fakeToken);
+    localStorage.setItem('authToken', fakeToken);
+    localStorage.setItem('currentUser', JSON.stringify(mockUser));
+    return mockUser;
+  };
+
   // Logout Function
   const logout = () => {
     setCurrentUser(null);
@@ -575,6 +601,7 @@ export function HospitalProvider({ children }) {
         authToken,
         login,
         logout,
+        demoLogin,
 
         // Fetch Functions
         fetchPatients,

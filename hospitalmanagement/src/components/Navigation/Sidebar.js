@@ -18,6 +18,7 @@ import {
   FlaskConical,
   Bed
 } from 'lucide-react';
+import { HospitalContext } from '../../context/HospitalContext';
 import './Sidebar.css';
 
 const LINKS = [
@@ -38,10 +39,12 @@ const LINKS = [
 ];
 
 export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
+  const { logout } = React.useContext(HospitalContext);
 
-  // Auto-collapse on small screens handled in Layout or parent usually, 
-  // but we can keep a listener here or just rely on props.
-  // For simplicity, we assume parent controls `collapsed`.
+  const handleLogout = () => {
+    logout();
+    // history.push('/login'); // If context doesn't handle redirect, App.js specific routes usually do.
+  };
 
   return (
     <>
@@ -95,7 +98,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
         </nav>
 
         <div className="sidebar-footer">
-          <button className="logout-btn">
+          <button className="logout-btn" onClick={logout}>
             <LogOut size={20} />
             {!collapsed && <span>Logout</span>}
           </button>

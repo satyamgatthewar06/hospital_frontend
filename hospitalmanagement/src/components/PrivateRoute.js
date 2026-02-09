@@ -18,11 +18,13 @@ const PrivateRoute = ({ component: Component, roles, ...rest }) => {
             {...rest}
             render={(props) => {
                 if (!isAuthenticated) {
+                    console.log('PrivateRoute Redirecting: Not Authenticated', { isAuthenticated, currentUser });
                     // Not logged in
                     return <Redirect to="/admin/login" />;
                 }
 
                 if (roles && roles.length > 0 && !roles.includes(currentUser?.role)) {
+                    console.log('PrivateRoute Redirecting: Role mismatch', { expected: roles, actual: currentUser?.role });
                     // Role not authorized
                     return <Redirect to="/" />;
                 }

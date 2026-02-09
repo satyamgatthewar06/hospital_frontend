@@ -9,7 +9,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 second timeout
+  timeout: 5000,
 });
 
 // Add request interceptor to include auth token
@@ -29,10 +29,14 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid, clear auth
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('currentUser');
-      window.location.href = '/admin/login';
+      // Don't redirect if already on login page
+      // And don't clear local storage if fallback is trying to work
+      const isLoginPage = window.location.pathname === '/admin/login';
+      if (!isLoginPage) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }
