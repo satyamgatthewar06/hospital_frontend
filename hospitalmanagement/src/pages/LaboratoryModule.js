@@ -1,5 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
+import WorkflowStepper from '../components/Laboratory/WorkflowStepper';
 import '../styles/LaboratoryModule.css';
 import {
   Activity,
@@ -45,8 +46,34 @@ const LaboratoryModule = () => {
 
   const [activeModule, setActiveModule] = useState('dashboard');
 
+  // Workflow State
+  const [workflowStep, setWorkflowStep] = useState(0);
+  const [stepCompletion, setStepCompletion] = useState({
+    testMaster: false,
+    collection: false,
+    assignment: false,
+    processing: false,
+    resultEntry: false,
+    verification: false,
+    billing: false,
+    reports: false
+  });
+
+  // Define Workflow Steps
+  const WORKFLOW_STEPS = [
+    { id: 'testMaster', label: 'Test Master', module: 'master' },
+    { id: 'collection', label: 'Sample Collection', module: 'collection' },
+    { id: 'assignment', label: 'Assignment', module: 'assignment' },
+    { id: 'processing', label: 'Processing', module: 'tracking' },
+    { id: 'resultEntry', label: 'Result Entry', module: 'entry' },
+    { id: 'verification', label: 'Verification', module: 'verification' },
+    { id: 'billing', label: 'Billing', module: 'billing' },
+    { id: 'reports', label: 'Reports', module: 'reports' }
+  ];
+
   // Use Context Data directly
   const testDefinitions = labTests || [];
+
 
   // ================= SUB-COMPONENTS =================
 
@@ -331,15 +358,20 @@ const LaboratoryModule = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
+        // Extract patient ID from the selected patient
+        const selectedPatient = ctx.patients?.find(p => p.name === formData.patientName);
+        const patientId = selectedPatient?.id || null;
+
         await addLabRequest({
-          ...formData,
           reqId: `REQ-${Date.now().toString().slice(-4)}`,
-          status: 'Sample Collected',
+          patientId: patientId,
+          patientName: formData.patientName,
+          testName: formData.testName,
+          sampleType: formData.sampleType,
           collectionDate: new Date().toISOString(),
-          department: formData.department,
-          timeline: [
-            { status: 'Sample Collected', timestamp: new Date().toISOString() }
-          ]
+          status: 'Sample Collected',
+          priority: formData.priority,
+          technicianName: formData.technicianName
         });
         alert('Sample Collected Successfully!');
         setFormData({ patientName: '', testName: '', sampleType: 'Blood', department: 'Hematology', technicianName: '', priority: 'Normal' });
@@ -403,9 +435,15 @@ const LaboratoryModule = () => {
                   required
                 >
                   <option value="">-- Select Technician --</option>
-                  {ctx.staff && ctx.staff.map(s => (
-                    <option key={s.id} value={s.name}>{s.name} ({s.role || 'Staff'})</option>
-                  ))}
+                  {ctx.staff && ctx.staff.map(s => {
+                    const staffName = s.name || s.firstName || s.staffName || 'Unknown';
+                    const staffRole = s.role || s.designation || 'Staff';
+                    return (
+                      <option key={s.id} value={staffName}>
+                        {staffName} - {staffRole}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             </div>
@@ -1449,48 +1487,131 @@ const LaboratoryModule = () => {
     );
   };
 
+  // ================= WORKFLOW FUNCTIONS =================
+
+  // Validate if a step is complete
+  const validateStep = (stepId) => {
+    switch (stepId) {
+      case 'testMaster':
+        return labTests && labTests.length > 0;
+      case 'collection':
+        return labRequests && labRequests.length > 0;
+      case 'assignment':
+        return labRequests && labRequests.some(r => r.technicianId);
+      case 'processing':
+        return labRequests && labRequests.some(r => r.status === 'Processing' || r.status === 'Completed');
+      case 'resultEntry':
+        return labRequests && labRequests.some(r => r.testResult);
+      case 'verification':
+        return labRequests && labRequests.some(r => r.isVerified === 1);
+      case 'billing':
+        return true; // Always allow billing step
+      case 'reports':
+        return labRequests && labRequests.some(r => r.status === 'Completed' && r.isVerified === 1);
+      default:
+        return false;
+    }
+  };
+
+  // Handle Next button
+  const handleNext = () => {
+    if (workflowStep < WORKFLOW_STEPS.length - 1) {
+      const currentStepId = WORKFLOW_STEPS[workflowStep].id;
+      if (validateStep(currentStepId)) {
+        setStepCompletion({ ...stepCompletion, [currentStepId]: true });
+        setWorkflowStep(workflowStep + 1);
+        setActiveModule(WORKFLOW_STEPS[workflowStep + 1].module);
+      } else {
+        alert(`Please complete ${WORKFLOW_STEPS[workflowStep].label} before proceeding.\n\nRequirement: ${getStepRequirement(currentStepId)}`);
+      }
+    }
+  };
+
+  // Handle Previous button
+  const handlePrevious = () => {
+    if (workflowStep > 0) {
+      setWorkflowStep(workflowStep - 1);
+      setActiveModule(WORKFLOW_STEPS[workflowStep - 1].module);
+    }
+  };
+
+  // Handle step click in stepper
+  const handleStepClick = (stepIndex) => {
+    if (stepIndex <= workflowStep) {
+      setWorkflowStep(stepIndex);
+      setActiveModule(WORKFLOW_STEPS[stepIndex].module);
+    }
+  };
+
+  // Get step requirement message
+  const getStepRequirement = (stepId) => {
+    switch (stepId) {
+      case 'testMaster':
+        return 'Add at least one test definition';
+      case 'collection':
+        return 'Collect at least one sample';
+      case 'assignment':
+        return 'Assign at least one test to a technician';
+      case 'processing':
+        return 'Mark at least one sample as Processing or Completed';
+      case 'resultEntry':
+        return 'Enter results for at least one test';
+      case 'verification':
+        return 'Verify at least one test result';
+      case 'billing':
+        return 'Generate bills for verified tests';
+      case 'reports':
+        return 'Complete and verify at least one test';
+      default:
+        return 'Complete the current step';
+    }
+  };
+
   return (
     <div className="laboratory-module">
-      <div className="tabs-navigation">
-        <button className={`tab-btn ${activeModule === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveModule('dashboard')}>
-          <Activity size={18} /> Dashboard
-        </button>
-        <button className={`tab-btn ${activeModule === 'master' ? 'active' : ''}`} onClick={() => setActiveModule('master')}>
-          <Settings size={18} /> Test Master
-        </button>
-        <button className={`tab-btn ${activeModule === 'assignment' ? 'active' : ''}`} onClick={() => setActiveModule('assignment')}>
-          <UserPlus size={18} /> Assignment
-        </button>
-        <button className={`tab-btn ${activeModule === 'entry' ? 'active' : ''}`} onClick={() => setActiveModule('entry')}>
-          <Microscope size={18} /> Result Entry
-        </button>
-        <button className={`tab-btn ${activeModule === 'verification' ? 'active' : ''}`} onClick={() => setActiveModule('verification')}>
-          <ShieldCheck size={18} /> Verification
-        </button>
-        <button className={`tab-btn ${activeModule === 'billing' ? 'active' : ''}`} onClick={() => setActiveModule('billing')}>
-          <CreditCard size={18} /> Billing
-        </button>
-        <button className={`tab-btn ${activeModule === 'collection' ? 'active' : ''}`} onClick={() => setActiveModule('collection')}>
-          <TestTube size={18} /> Collection
-        </button>
-        <button className={`tab-btn ${activeModule === 'tracking' ? 'active' : ''}`} onClick={() => setActiveModule('tracking')}>
-          <ClipboardList size={18} /> Processing
-        </button>
-        <button className={`tab-btn ${activeModule === 'reports' ? 'active' : ''}`} onClick={() => setActiveModule('reports')}>
-          <Printer size={18} /> Reports
-        </button>
+      <h1 style={{ marginBottom: '1.5rem' }}>🧪 Laboratory Management - Sequential Workflow</h1>
+
+      {/* Workflow Stepper */}
+      <WorkflowStepper
+        steps={WORKFLOW_STEPS}
+        currentStep={workflowStep}
+        onStepClick={handleStepClick}
+        stepCompletion={stepCompletion}
+      />
+
+      {/* Current Step Content */}
+      <div className="lab-content">
+        {workflowStep === 0 && <TestMaster />}
+        {workflowStep === 1 && <SampleCollection />}
+        {workflowStep === 2 && <TestAssignment />}
+        {workflowStep === 3 && <LabTracking />}
+        {workflowStep === 4 && <ResultEntry />}
+        {workflowStep === 5 && <ResultVerification />}
+        {workflowStep === 6 && <LabBilling />}
+        {workflowStep === 7 && <Reports />}
       </div>
 
-      <div className="lab-content">
-        {activeModule === 'dashboard' && <LabDashboard />}
-        {activeModule === 'master' && <TestMaster />}
-        {activeModule === 'assignment' && <TestAssignment />}
-        {activeModule === 'entry' && <ResultEntry />}
-        {activeModule === 'verification' && <ResultVerification />}
-        {activeModule === 'billing' && <LabBilling />}
-        {activeModule === 'collection' && <SampleCollection />}
-        {activeModule === 'tracking' && <LabTracking />}
-        {activeModule === 'reports' && <Reports />}
+      {/* Navigation Controls */}
+      <div className="workflow-navigation">
+        <button
+          className="btn btn-secondary"
+          onClick={handlePrevious}
+          disabled={workflowStep === 0}
+        >
+          ← Previous
+        </button>
+
+        <div className="step-indicator">
+          Step {workflowStep + 1} of {WORKFLOW_STEPS.length}: {WORKFLOW_STEPS[workflowStep].label}
+        </div>
+
+        <button
+          className="btn btn-primary"
+          onClick={handleNext}
+          disabled={workflowStep === WORKFLOW_STEPS.length - 1}
+        >
+          Next →
+        </button>
       </div>
     </div>
   );

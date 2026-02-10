@@ -115,7 +115,6 @@ const AdminLogin = () => {
 					<option value="RECEPTIONIST">Receptionist</option>
 					<option value="ACCOUNTANT">Accountant</option>
 					<option value="LABORATORY">Laboratory</option>
-					<option value="PHARMACIST">Pharmacist</option>
 				</select>
 
 				<label>Username</label>

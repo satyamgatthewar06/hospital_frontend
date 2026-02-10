@@ -28,8 +28,8 @@ const EnhancedStaffManagement = () => {
   }, [staff]);
 
   const staffList = localStaff || [];
-  const roles = ['Doctor', 'Nurse', 'Receptionist', 'Technician', 'Pharmacist', 'Admin'];
-  const departments = ['General', 'Cardiology', 'Orthopedics', 'Neurology', 'Surgery', 'Pediatrics', 'ICU', 'Emergency'];
+  const roles = ['Doctor', 'Nurse', 'Receptionist', 'Lab Technician', 'Technician', 'Pharmacist', 'Admin'];
+  const departments = ['General', 'Cardiology', 'Orthopedics', 'Neurology', 'Surgery', 'Pediatrics', 'ICU', 'Emergency', 'Laboratory'];
 
   const stats = useMemo(() => {
     const roleCount = {};
@@ -90,6 +90,7 @@ const EnhancedStaffManagement = () => {
       'Doctor': '#667eea',
       'Nurse': '#f5576c',
       'Receptionist': '#4facfe',
+      'Lab Technician': '#00d2ff',
       'Technician': '#fa709a',
       'Pharmacist': '#fee140',
       'Admin': '#43e97b'

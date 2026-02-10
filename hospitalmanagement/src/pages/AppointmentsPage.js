@@ -2,57 +2,72 @@ import React, { useContext, useState, useMemo } from 'react';
 import { HospitalContext } from '../context/HospitalContext';
 import '../styles/AppointmentsPage.css';
 
-const DOCTORS = [
-  { id: 1, name: 'Dr. P V Gadewar', specialty: 'Gynecology' },
-  { id: 2, name: 'Dr. P G Gadewar', specialty: 'Orthopedics' },
-  { id: 3, name: 'Dr. Rahul Kotalwar', specialty: 'General Physician' },
-  { id: 4, name: 'Dr. Satyam Kalambkar', specialty: 'General Surgery' },
-  { id: 5, name: 'Dr. Rajesh Tagadpallewar', specialty: 'Anesthesia' },
-  { id: 6, name: 'Dr. Sumeet Amilkanthawar', specialty: 'Anesthesia' },
-];
-
 function formatDate(d) {
   return d.toISOString().split('T')[0];
 }
 
 function AppointmentsPage() {
-  const { doctors, appointments, setAppointments } = useContext(HospitalContext);
+  const { doctors, patients, appointments, addAppointment } = useContext(HospitalContext);
   const [doctorFilter, setDoctorFilter] = useState('all');
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
-  const [form, setForm] = useState({ patientName: '', contact: '', email: '', doctorId: doctors[0]?.id || '', date: selectedDate, time: '09:00', reason: '' });
+  const [form, setForm] = useState({
+    patientId: '',
+    doctorId: '',
+    appointmentDate: selectedDate,
+    time: '09:00',
+    reason: ''
+  });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter(a => (doctorFilter === 'all' ? true : String(a.doctorId) === String(doctorFilter)));
   }, [appointments, doctorFilter]);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
+    setSuccess('');
+  };
 
   const handleBook = async (e) => {
     e.preventDefault();
-    const doctor = DOCTORS.find(d => String(d.id) === String(form.doctorId));
-    const newAppt = { id: Date.now(), ...form, doctor: doctor?.name || '', doctorId: form.doctorId };
+    setError('');
+    setSuccess('');
 
     try {
-      const res = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAppt)
-      });
-      if (res.ok) {
-        const saved = await res.json();
-        setAppointments([ ...appointments, saved ]);
-      } else {
-        // fallback to local state if server fails
-        setAppointments([ ...appointments, newAppt ]);
-      }
-    } catch (err) {
-      setAppointments([ ...appointments, newAppt ]);
-    }
+      // Prepare appointment data matching backend expectations
+      const appointmentData = {
+        patientId: parseInt(form.patientId),
+        doctorId: parseInt(form.doctorId),
+        appointmentDate: `${form.appointmentDate}T${form.time}:00`,
+        reason: form.reason,
+        status: 'scheduled'
+      };
 
-    setForm({ patientName: '', contact: '', email: '', doctorId: doctors[0]?.id || '', date: selectedDate, time: '09:00', reason: '' });
+      // Use the context's addAppointment function
+      await addAppointment(appointmentData);
+
+      setSuccess('Appointment booked successfully!');
+
+      // Reset form
+      setForm({
+        patientId: '',
+        doctorId: '',
+        appointmentDate: selectedDate,
+        time: '09:00',
+        reason: ''
+      });
+    } catch (err) {
+      console.error('Appointment booking error:', err);
+      setError(err.response?.data?.message || 'Failed to book appointment. Please try again.');
+    }
   };
 
-  const appointmentsForDay = appointments.filter(a => a.date === selectedDate && (doctorFilter === 'all' ? true : String(a.doctorId) === String(doctorFilter)));
+  const appointmentsForDay = appointments.filter(a => {
+    const apptDate = a.appointmentDate ? a.appointmentDate.split('T')[0] : a.date;
+    return apptDate === selectedDate && (doctorFilter === 'all' ? true : String(a.doctorId) === String(doctorFilter));
+  });
 
   // Simple month grid for calendar view
   const today = new Date(selectedDate);
@@ -76,32 +91,30 @@ function AppointmentsPage() {
         {/* Book Appointment Form */}
         <div className="appointment-form card">
           <h2>Book New Appointment</h2>
+
+          {error && <div className="alert alert-error">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
+
           <form onSubmit={handleBook}>
             <div className="form-group">
-              <label>Patient Name</label>
-              <input
-                type="text"
-                name="patientName"
-                value={form.patientName}
+              <label>Select Patient *</label>
+              <select
+                name="patientId"
+                value={form.patientId}
                 onChange={handleChange}
-                placeholder="Enter patient name"
                 required
-              />
+              >
+                <option value="">-- Choose Patient --</option>
+                {patients && patients.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.firstName} {p.lastName} (ID: {p.id})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
-              <label>Email (for confirmation)</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="patient@example.com"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Select Doctor</label>
+              <label>Select Doctor *</label>
               <select
                 name="doctorId"
                 value={form.doctorId}
@@ -109,23 +122,27 @@ function AppointmentsPage() {
                 required
               >
                 <option value="">-- Choose Doctor --</option>
-                {DOCTORS.map(d => <option key={d.id} value={d.id}>{d.name} — {d.specialty}</option>)}
+                {doctors && doctors.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.firstName} {d.lastName} {d.specialization ? `— ${d.specialization}` : ''}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>Date</label>
+              <label>Date *</label>
               <input
                 type="date"
-                name="date"
-                value={form.date}
+                name="appointmentDate"
+                value={form.appointmentDate}
                 onChange={(e) => { handleChange(e); setSelectedDate(e.target.value); }}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label>Time</label>
+              <label>Time *</label>
               <input
                 type="time"
                 name="time"
@@ -137,7 +154,7 @@ function AppointmentsPage() {
 
             <div className="form-group">
               <label>Reason for Visit</label>
-              <input
+              <textarea
                 name="reason"
                 value={form.reason}
                 onChange={handleChange}
@@ -154,12 +171,16 @@ function AppointmentsPage() {
         <div className="doctors-list card">
           <h2>Available Doctors</h2>
           <div className="doctors-grid">
-            {DOCTORS.map((doc, idx) => (
-              <div key={doc.id} className="doctor-card" style={{ animationDelay: `${idx * 50}ms` }}>
-                <h3>{doc.name}</h3>
-                <p className="specialty">{doc.specialty}</p>
-              </div>
-            ))}
+            {doctors && doctors.length > 0 ? (
+              doctors.map((doc, idx) => (
+                <div key={doc.id} className="doctor-card" style={{ animationDelay: `${idx * 50}ms` }}>
+                  <h3>{doc.firstName} {doc.lastName}</h3>
+                  <p className="specialty">{doc.specialization || 'General'}</p>
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">No doctors available</p>
+            )}
           </div>
         </div>
 
@@ -178,18 +199,26 @@ function AppointmentsPage() {
                     <th>Date</th>
                     <th>Time</th>
                     <th>Reason</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {appointments.map(a => (
-                    <tr key={a.id} className="fade-in">
-                      <td>{a.patientName}</td>
-                      <td>{a.doctor}</td>
-                      <td>{a.date}</td>
-                      <td>{a.time}</td>
-                      <td>{a.reason || '--'}</td>
-                    </tr>
-                  ))}
+                  {appointments.map(a => {
+                    const apptDate = a.appointmentDate || a.date || '';
+                    const dateOnly = apptDate.split('T')[0];
+                    const timeOnly = apptDate.includes('T') ? apptDate.split('T')[1].substring(0, 5) : (a.time || '--');
+
+                    return (
+                      <tr key={a.id} className="fade-in">
+                        <td>{a.patientFirstName} {a.patientLastName}</td>
+                        <td>{a.doctorFirstName} {a.doctorLastName}</td>
+                        <td>{dateOnly}</td>
+                        <td>{timeOnly}</td>
+                        <td>{a.reason || '--'}</td>
+                        <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
