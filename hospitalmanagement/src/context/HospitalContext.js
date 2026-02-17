@@ -426,6 +426,18 @@ export function HospitalProvider({ children }) {
     }
   };
 
+  // Update Appointment via Backend
+  const updateAppointment = async (appointmentId, updates) => {
+    try {
+      const response = await appointmentAPI.update(appointmentId, updates);
+      setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, ...updates, ...(response.data.data || {}) } : a));
+      return response.data;
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      throw error;
+    }
+  };
+
   // Delete Appointment
   const deleteAppointment = async (appointmentId) => {
     try {
@@ -637,6 +649,7 @@ export function HospitalProvider({ children }) {
         addInsurancePolicy,
 
         // Update Functions
+        updateAppointment,
         updateBillPayment,
         updateLabRequest,
         updateLabTest,
