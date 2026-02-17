@@ -18,9 +18,10 @@ const AdminLogin = () => {
 	// Auto-login on mount if already authenticated
 	useEffect(() => {
 		if (isAuthenticated && currentUser) {
-			if (currentUser.role === 'ADMIN') {
+			const userRole = currentUser.role?.toLowerCase();
+			if (userRole === 'admin') {
 				history.push('/admin-dashboard');
-			} else if (currentUser.role === 'DOCTOR') {
+			} else if (userRole === 'doctor') {
 				history.push('/doctors');
 			} else {
 				history.push('/');
@@ -38,12 +39,11 @@ const AdminLogin = () => {
 			const user = await login(username, password);
 			console.log('Login successful:', user);
 
-			// Normalize roles for comparison
-			const contentRole = user.role ? user.role.toUpperCase() : '';
-			const selectedRole = role.toUpperCase();
+			// Normalize roles for comparison (both to lowercase)
+			const contentRole = user.role ? user.role.toLowerCase() : '';
+			const selectedRole = role.toLowerCase();
 
 			// Check if the user has the selected role
-			// Note: If user.role is array, this needs adjustment. standard seems to be string.
 			if (contentRole !== selectedRole) {
 				setError(`Access Denied: You are logged in as ${user.role}, but selected ${role}.`);
 				setLoading(false);
@@ -52,19 +52,19 @@ const AdminLogin = () => {
 
 			setLoading(false);
 
-			// Redirect based on role
+			// Redirect based on role (all lowercase after normalization)
 			switch (contentRole) {
-				case 'ADMIN':
+				case 'admin':
 					history.push('/admin-dashboard');
 					break;
-				case 'DOCTOR':
+				case 'doctor':
 					history.push('/doctors');
 					break;
-				case 'NURSE':
-				case 'RECEPTIONIST':
-				case 'ACCOUNTANT':
-				case 'LABORATORY':
-				case 'PHARMACIST':
+				case 'nurse':
+				case 'receptionist':
+				case 'accountant':
+				case 'laboratory':
+				case 'pharmacist':
 				default:
 					history.push('/'); // Default dashboard
 					break;
@@ -73,9 +73,20 @@ const AdminLogin = () => {
 		} catch (err) {
 			setLoading(false);
 			// Fallback to default credentials for demo/development
-			// Note: This only works for ADMIN in this specific block, but can be expanded
-			if (username === 'admin' && password === 'admin123' && role === 'ADMIN') {
-				console.log('Using fallback demo credentials');
+			const demoCredentials = {
+				admin: { user: 'admin', pass: 'admin123', redirect: '/admin-dashboard' },
+				doctor: { user: 'doctor', pass: 'doctor123', redirect: '/doctors' },
+				nurse: { user: 'nurse', pass: 'nurse123', redirect: '/' },
+				receptionist: { user: 'receptionist', pass: 'recep123', redirect: '/' },
+				accountant: { user: 'accountant', pass: 'account123', redirect: '/comprehensive-billing' },
+				laboratory: { user: 'lab', pass: 'lab123', redirect: '/laboratory' },
+			};
+
+			const selectedRole = role.toLowerCase();
+			const demoCred = demoCredentials[selectedRole];
+
+			if (demoCred && username === demoCred.user && password === demoCred.pass) {
+				console.log('Using fallback demo credentials for role:', selectedRole);
 
 				// Manually set auth state for demo
 				demoLogin(role);
@@ -83,7 +94,7 @@ const AdminLogin = () => {
 				setLoading(true);
 				setTimeout(() => {
 					setLoading(false);
-					history.push('/admin-dashboard');
+					history.push(demoCred.redirect);
 				}, 800);
 			} else {
 				setError(err.response?.data?.message || 'Invalid username or password');

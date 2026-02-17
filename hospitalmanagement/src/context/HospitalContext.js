@@ -447,6 +447,11 @@ export function HospitalProvider({ children }) {
       const user = response.data.user || response.data;
       const token = response.data.token;
 
+      // Normalize role to lowercase to match route definitions in App.js
+      if (user.role) {
+        user.role = user.role.toLowerCase();
+      }
+
       setCurrentUser(user);
       setIsAuthenticated(true);
       if (token) {
@@ -536,6 +541,10 @@ export function HospitalProvider({ children }) {
     if (storedToken && storedUser) {
       try {
         const user = JSON.parse(storedUser);
+        // Normalize role to lowercase on restore
+        if (user.role) {
+          user.role = user.role.toLowerCase();
+        }
         setCurrentUser(user);
         setIsAuthenticated(true);
         setAuthToken(storedToken);

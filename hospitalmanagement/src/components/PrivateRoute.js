@@ -23,7 +23,8 @@ const PrivateRoute = ({ component: Component, roles, ...rest }) => {
                     return <Redirect to="/admin/login" />;
                 }
 
-                if (roles && roles.length > 0 && !roles.includes(currentUser?.role)) {
+                const userRole = currentUser?.role?.toLowerCase();
+                if (roles && roles.length > 0 && !roles.map(r => r.toLowerCase()).includes(userRole)) {
                     console.log('PrivateRoute Redirecting: Role mismatch', { expected: roles, actual: currentUser?.role });
                     // Role not authorized
                     return <Redirect to="/" />;

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -40,10 +40,11 @@ const LINKS = [
 
 export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const { logout } = React.useContext(HospitalContext);
+  const history = useHistory();
 
   const handleLogout = () => {
     logout();
-    // history.push('/login'); // If context doesn't handle redirect, App.js specific routes usually do.
+    history.push('/admin/login');
   };
 
   return (
@@ -98,7 +99,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
         </nav>
 
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={logout}>
+          <button className="logout-btn" onClick={handleLogout}>
             <LogOut size={20} />
             {!collapsed && <span>Logout</span>}
           </button>
