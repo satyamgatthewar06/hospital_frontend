@@ -1,7 +1,19 @@
 import axios from 'axios';
 
-// Get API base URL from environment variables or use default
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+// Get API base URL - auto-detect for Railway production deployment
+const getApiBaseUrl = () => {
+  // 1. Check env var (works in dev and when set at build time)
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  // 2. Auto-detect Railway production: frontend is hospitalfrontend-*, backend is hospitalbackend-*
+  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
+    return 'https://hospitalbackend-production.up.railway.app/api';
+  }
+  // 3. Default for local development
+  return 'http://localhost:5001/api';
+};
+const API_BASE_URL = getApiBaseUrl();
 
 // Create axios instance with default config
 const apiClient = axios.create({
